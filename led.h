@@ -1,3 +1,12 @@
+/*
+ * led.h - LED control (interface to rgbd)
+ *
+ * Copyright (C) 2021 Linzhi Ltd.
+ *
+ * This work is licensed under the terms of the MIT License.
+ * A copy of the license can be found in the file COPYING.txt
+ */
+
 #ifndef COORD_LED_H
 #define	COORD_LED_H
 
