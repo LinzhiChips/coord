@@ -1,0 +1,103 @@
+#
+# common/Makefile.c-common - Common Makefile items for C
+#
+# Written 2013-2017 by Werner Almesberger
+# Copyright 2013-2017 by Werner Almesberger
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+
+SHELL = /bin/bash
+
+
+OBJ_SUFFIX ?= .o
+OBJDIR ?=
+
+# Special overrides for individual roles: CPP generating dependencies,
+# CC compiling C or linking, and CC operating as assembler.
+
+CFLAGS_DEPEND ?=
+CFLAGS_CC ?=
+CFLAGS_CC_ASM ?=
+
+ifeq ($(origin CC)-$(CC),default-cc)
+    CC = gcc
+endif
+
+# Make sure "all" comes first
+
+all::
+
+# ----- YACC settings ---------------------------------------------------------
+
+YACC = bison -y
+YYFLAGS = -v
+
+# ----- Verbosity control -----------------------------------------------------
+
+CC_normal	:= $(CROSS)$(CC)
+AS_normal	:= $(CROSS)$(AS)
+CPP_normal	:= $(CPP)
+LEX_normal	:= $(LEX)
+YACC_normal	:= $(YACC)
+DEPEND_normal	= $(CPP_normal) $(CFLAGS) $(CFLAGS_DEPEND) -MM -MG
+
+ifeq ($(V),1)
+    CC		= $(CC_normal)
+    AS		= $(AS_normal)
+    LEX		= $(LEX_normal)   
+    YACC	= $(YACC_normal)   
+    BUILD	=
+    DEPEND	= $(DEPEND_normal)
+else
+    CC		= @echo "  CC       " $@ && $(CC_normal)
+    AS		= @echo "  AS       " $@ && $(AS_normal)
+    LEX		= @echo "  LEX      " $@ && $(LEX_normal)
+    YACC	= @echo "  YACC     " $@ && $(YACC_normal)
+    BUILD	= @echo "  BUILD    " $@ &&
+    DEPEND	= @$(DEPEND_normal)
+endif
+
+# ----- Dependencies ----------------------------------------------------------
+
+-include $(OBJS:%$(OBJ_SUFFIX)=$(OBJDIR)%.d)
+
+MKDEP =									\
+	$(DEPEND) $< |							\
+	  sed 								\
+	    -e 's|^$(basename $(notdir $<))\$(OBJ_SUFFIX):|$@:|'	\
+	    -e '/^\(.*:\)\? */{p;s///;s/ *\\\?$$/ /;s/  */:\n/g;H;}'	\
+	    -e '$${g;p;}'						\
+	    -e d >$(basename $@).d;					\
+	  [ "$${PIPESTATUS[*]}" = "0 0" ] ||				\
+	  { rm -f $(basename $@).d; exit 1; }
+
+#
+# See
+# http://stackoverflow.com/questions/5229561/gnu-make-generating-automatic-dependencies-with-generated-header-files
+#
+
+.PHONY:		generated_headers
+
+OBJS_IN_OBJDIR = $(OBJS:%=$(OBJDIR)%)
+
+$(OBJDIR)%$(OBJ_SUFFIX): %.c | generated_headers
+		$(CC) $(CFLAGS) $(CFLAGS_CC) -o $@ -c $<
+		$(MKDEP)
+
+$(OBJDIR)%$(OBJ_SUFFIX): %.s
+		$(CC) $(CFLAGS) $(CFLAGS_CC_ASM) -o $@ -c $<
+
+# ----- Cleanup ---------------------------------------------------------------
+
+.PHONY:		clean spotless
+
+clean::
+		rm -f $(OBJS:%=$(OBJDIR)%) \
+		    $(patsubst %$(OBJ_SUFFIX),%.d,$(OBJS:%=$(OBJDIR)%)) \
+		    $(OBJDIR)version$(OBJ_SUFFIX)
+
+spotless::	clean

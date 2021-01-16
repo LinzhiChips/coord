@@ -1,0 +1,124 @@
+LED meaning
+-----------
+
+Color	Blink	Meaning				How to clear
+-----	-----	-------------------------------	-------------------------------
+BLUE	Y	Miner has been highlighted	Press USER / Toggle highlight
+						 on UI
+	N	Miner is in recovery mode	Reboot
+	N	Operator is pressing USER	Release USER (if stuck, press
+						again)
+RED	Y	Thermal and/or power shutdown	Press USER / Clear on UI
+YELLOW	Y	Thermal warning			Press USER / Lower temperature
+	N	Not connected to pool		- Make sure pool is configured
+						  & enabled
+						- Check network
+	N	Miner is (re)configuring ASICs	Wait
+	N	Miner is booting		Wait
+GREEN	N	Miner is mining			n/a
+DARK	-	Miner is mining (in dark mode)	Pressing USER turns the LED
+						back on.
+
+
+States
+------
+
+HIGHLIGHT (transparent: color determined by ABNORMAL)
+- - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+initial:
+  if recovert -> RECOVERY
+  else -> BACKGROUND
+  USER_press -> USER
+  
+BACKGROUND (transparent)
+  highlight on -> HIGHLIGHT
+  USER_press -> USER
+
+HIGHLIGHT (blue blink)
+  highlight off -> BACKGROUND
+  USER_press -> USER
+
+USER (blue)
+  highlight on -> HIGHLIGHT
+  USER_release -> BACKGROUND
+
+RECOVERY (blue)
+  (only reset changes the state)
+
+
+ABNORMAL (transparent: color determined by POOL)
+- - - - - - - - - - - - - - - - - - - - - - - -
+
+initial: NORMAL
+
+cond = {}
+
+twarn on -> cond += TW
+twarn off -> cond -= TW
+tshut on -> cond += TS
+tshut off -> cond -= TS
+pshut on -> cond += PS
+pshut off -> cond -= PS
+i2cshut on -> cond += I2CS
+i2cshut off -> cond -= I2CS
+i2cwarn on -> cond += I2CW
+i2cwarn off -> cond -= I2CW
+card-warn on -> cond += CARD
+card-warn off -> cond -= CARD
+
+
+NORMAL (transparent)
+   { TW, CARD, I2CW } in cond && { *S } not in cond -> WARN
+   TS in cond || PS in cond || I2CS in cond -> SHUTDOWN
+
+WARN (yellow blink)
+   cond == {} -> NORMAL
+   TS in cond || PS in cond || I2CS in cond -> SHUTDOWN
+   USER_press ->if CARD in cond -> card-troubled clear
+		NOWARN
+
+NOWARN (transparent)
+   cond == {} -> NORMAL
+   TS in cond || PS in cond || I2CS in cond -> SHUTDOWN
+
+SHUTDOWN (red blink)
+   USER_press ->if TS in cond -> tshut clear
+		if PS in cond -> pshut clear
+		if I2CS in cond -> i2c-troubled clear
+		stay
+   clear ->	if TS in cond -> tshut clear
+		if PS in cond -> pshut clear
+		if I2CS in cond -> i2c-troubled clear
+		if CARD in cond -> card-troubled clear
+		stay
+   cond change ->
+		if cond = {} -> NORMAL
+   		{ TW, CARD, I2CW } in cond && { *S } not in cond -> WARN
+		else -> stay
+
+ 
+POOL (transparent: color determined by MINING)
+- - - - - - - - - - - - - - - - - - - - - - -
+
+initial: DISCONNECTED
+
+DISCONNECTED (yellow)
+    got job -> CONNECTED
+
+CONNECTED (transparent)
+    disconnect -> DISCONNECTED
+    reset -> DISCONNECTED
+
+
+MINING
+- - -
+
+initial: IDLE
+
+IDLE (yellow)
+  good acked -> MINING
+
+MINING (if dark: no light. else: green)
+  stop/exit -> IDLE
+  reset -> IDLE
