@@ -15,6 +15,7 @@
 #include "linzhi/mqtt.h"
 
 #include "fsm.h"
+#include "fan.h"
 #include "mqtt.h"
 #include "coord.h"
 
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
 		usage(*argv);
 	}
 
+	fan_init();
 	mqtt_setup();
 	fsm_init();
 	mqtt_loop();

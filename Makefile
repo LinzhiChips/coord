@@ -13,7 +13,7 @@ CFLAGS = -g -Wall -Wextra -Wshadow -Wno-unused-parameter \
 override CFLAGS += $(CFLAGS_OVERRIDE)
 LDLIBS = -L../$(LIB_ARCH_PREFIX)libcommon -lcommon -lpthread -lmosquitto
 
-OBJS = $(NAME).o fsm.o led.o mqtt.o
+OBJS = $(NAME).o fsm.o led.o mqtt.o fan.o
 
 include Makefile.c-common
 

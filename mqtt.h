@@ -30,6 +30,11 @@
 #define	MQTT_TOPIC_LED_RGB	"/sys/led/rgb"
 #define	MQTT_TOPIC_LED_ETHER	"/sys/led/ether"
 
+#define	MQTT_TOPIC_0_TEMP	"/temp/0/current"
+#define	MQTT_TOPIC_1_TEMP	"/temp/1/current"
+#define	MQTT_TOPIC_FAN_PROFILE	"/fan/profile"
+#define	MQTT_TOPIC_ALL_PWM_SET	"/fan/all/pwm-set"
+
 
 void mqtt_setup(void);
 void mqtt_loop(void);

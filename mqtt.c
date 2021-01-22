@@ -16,6 +16,7 @@
 
 #include "coord.h"
 #include "fsm.h"
+#include "fan.h"
 #include "mqtt.h"
 
 
@@ -57,6 +58,18 @@ static void process_mined_state(const char *s)
 	 */
 	if (!strcmp(s, "dead"))
 		ev_stop();
+}
+
+
+static void process_temp_0(const char *s)
+{
+	fan_temp(0, s);
+}
+
+
+static void process_temp_1(const char *s)
+{
+	fan_temp(1, s);
 }
 
 
@@ -151,6 +164,10 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_POOL_STATS, process_pool_stats);
 	sub_string(MQTT_TOPIC_MINED_STATE, process_mined_state);
 	sub_n(MQTT_TOPIC_DARK_MODE, dark_mode_set);
+
+	sub_string(MQTT_TOPIC_0_TEMP, process_temp_0);
+	sub_string(MQTT_TOPIC_1_TEMP, process_temp_1);
+	sub_string(MQTT_TOPIC_FAN_PROFILE, fan_profile);
 
 	mqtt_init(NULL, 0);
 }
