@@ -35,6 +35,7 @@ struct point {
 
 static bool have_profile = 0;
 static long max_temp[SLOTS];
+static bool have_temp = 0;
 static struct dtime last_temp;
 static struct point *points = NULL;
 static unsigned n_points;
@@ -52,6 +53,11 @@ static void update_pwm(void)
 	uint8_t slot;
 	const struct point *last = NULL;
 	unsigned i, duty;
+
+	if (!have_temp) {
+		set_duty(100);
+		return;
+	}
 
 	assert(have_profile);
 	for (slot = 0; slot != SLOTS; slot++)
@@ -76,7 +82,8 @@ static void update_pwm(void)
 	}
 	assert(last->temp != points[i].temp);
 	duty = last->duty + (points[i].duty - last->duty) *
-            ((double) (temp - last->temp) / (points[i].temp - last->temp));
+            ((double) (temp - last->temp) / (points[i].temp - last->temp)) +
+	    0.5;
 	if (verbose)
 		fprintf(stderr, "%ld at (%u to %u) over (%ld to %ld) = %u\n",
 		    temp, last->duty, points[i].duty,
@@ -117,6 +124,7 @@ void fan_temp(bool slot, const char *s)
 			fprintf(stderr, "no good temperature\n");
 	}
 	if (good) {
+		have_temp = 1;
 		max_temp[slot] = max;
 		dtime_set(&last_temp, NULL);
 	}
