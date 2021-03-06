@@ -91,7 +91,7 @@ static void cb_bool(void *user, const char *topic, const char *msg)
 	char *end;
 
 	n = strtoull(msg, &end, 0);
-	if (*end && *end != '.')
+	if (*end && *end != '.' && *end != ' ')
 		n = 0;
 	fn(n);
 }
