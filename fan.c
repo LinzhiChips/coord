@@ -151,7 +151,7 @@ void fan_profile(const char *s)
 		next = strchr(s, ' ');
 		if (sscanf(s, "%u:%u", &temp, &duty) == 2 &&
 		    (!last || last->temp < temp) &&
-		    (!last || last->duty < duty)) {
+		    (!last || last->duty <= duty)) {
 			points = realloc_type_n(points, n_points + 1);
 			last = points + n_points;
 			n_points++;
