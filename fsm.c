@@ -7,15 +7,18 @@
  * A copy of the license can be found in the file COPYING.txt
  */
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "linzhi/mqtt.h"
+#include "linzhi/dtime.h"
 
 #include "coord.h"
 #include "mqtt.h"
 #include "led.h"
+#include "action.h"
 #include "fsm.h"
 
 
@@ -408,14 +411,24 @@ void ev_reset(void)
 /* ----- USER button ------------------------------------------------------- */
 
 
+static bool button_down = 0;
+static struct dtime button_down_since;
+static bool user_long = 0;
+
+
 void ev_user(bool down)
 {
+	if (down && !button_down)
+		dtime_set(&button_down_since, NULL);
+	button_down = down;
 	if (down) {
 		dark_mode_cancel();
 		/* if we use MQTT_SUB_OPT_NO_LOCAL, call ev_clear(); */
 		mqtt_printf(MQTT_TOPIC_CLEAR, qos_ack, 1, "x");
 		if (abnormal_state == as_warn)
 			abnormal_state = as_nowarn;
+	} else {
+		user_long = 0;
 	}
 	if (highlight_state == hs_highlight) {
 		mqtt_printf(MQTT_TOPIC_HIGHLIGHT, qos_ack, 1, "0");
@@ -424,6 +437,20 @@ void ev_user(bool down)
 		highlight_state = down ? hs_user : hs_background;
 	}
 	update_led();
+}
+
+
+/* ----- Periodic tick ----------------------------------------------------- */
+
+
+void ev_tick(void)
+{
+	if (!button_down || dtime_s(&button_down_since, NULL) < USER_LONG_S)
+		return;
+	if (user_long)
+		return;
+	user_long = 1;
+	run_event_action("user-long");
 }
 
 

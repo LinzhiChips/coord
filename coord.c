@@ -14,6 +14,7 @@
 
 #include "linzhi/mqtt.h"
 
+#include "action.h"
 #include "fsm.h"
 #include "fan.h"
 #include "mqtt.h"
@@ -26,9 +27,12 @@ bool verbose = 0;
 static void usage(const char *name)
 {
 	fprintf(stderr,
-"usage: %s [-v]\n\n"
+"usage: %s [-v] [-x event:command]\n\n"
 "  -v  verbose operation\n"
-	    , name);
+"  -x event:script\n"
+"      execute a shell command when an event occurs. Available events:\n"
+"      user-long  USER button is being pressed for %g seconds or longer\n"
+	    , name, USER_LONG_S);
 	exit(1);
 }
 
@@ -37,11 +41,14 @@ int main(int argc, char **argv)
 {
 	int c;
 
-	while ((c = getopt(argc, argv, "v")) != EOF)
+	while ((c = getopt(argc, argv, "vx:")) != EOF)
 		switch (c) {
 		case 'v':
 			verbose = 1;
 			mqtt_verbose = 2;
+			break;
+		case 'x':
+			add_event_action(optarg);
 			break;
 		default:
 			usage(*argv);

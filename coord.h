@@ -13,6 +13,10 @@
 #include <stdbool.h>
 
 
+#define	TICK_MS	100
+#define	USER_LONG_S	2.0	/* long press */
+
+
 extern bool verbose;
 
 #endif /* !COORD_COORD_H */

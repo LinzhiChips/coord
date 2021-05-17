@@ -49,6 +49,10 @@ void ev_reset(void);
 
 void ev_user(bool down);
 
+/* periodic tick */
+
+void ev_tick(void);
+
 /* initialization */
 
 void fsm_init(void);
