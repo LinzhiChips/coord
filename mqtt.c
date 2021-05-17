@@ -176,7 +176,7 @@ void mqtt_setup(void)
 void mqtt_loop(void)
 {
 	while (1) {
-		mqtt_loop_once();
+		mqtt_loop_once(-1);
 		dark_mode_idle();
 	}
 }
