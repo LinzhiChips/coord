@@ -73,6 +73,18 @@ static void process_temp_1(const char *s)
 }
 
 
+static void process_skip_0(const char *s)
+{
+	fan_skip(0, s);
+}
+
+
+static void process_skip_1(const char *s)
+{
+	fan_skip(1, s);
+}
+
+
 /* ----- Callback wrappers ------------------------------------------------- */
 
 
@@ -167,6 +179,8 @@ void mqtt_setup(void)
 
 	sub_string(MQTT_TOPIC_0_TEMP, process_temp_0);
 	sub_string(MQTT_TOPIC_1_TEMP, process_temp_1);
+	sub_string(MQTT_TOPIC_0_SKIP, process_skip_0);
+	sub_string(MQTT_TOPIC_1_SKIP, process_skip_1);
 	sub_string(MQTT_TOPIC_FAN_PROFILE, fan_profile);
 
 	mqtt_init(NULL, 0);

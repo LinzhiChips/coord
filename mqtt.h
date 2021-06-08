@@ -32,6 +32,8 @@
 
 #define	MQTT_TOPIC_0_TEMP	"/temp/0/current"
 #define	MQTT_TOPIC_1_TEMP	"/temp/1/current"
+#define	MQTT_TOPIC_0_SKIP	"/temp/0/skip"
+#define	MQTT_TOPIC_1_SKIP	"/temp/1/skip"
 #define	MQTT_TOPIC_FAN_PROFILE	"/fan/profile"
 #define	MQTT_TOPIC_ALL_PWM_SET	"/fan/all/pwm-set"
 

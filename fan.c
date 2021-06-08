@@ -35,6 +35,7 @@ struct point {
 
 static bool have_profile = 0;
 static long max_temp[SLOTS];
+static uint64_t temp_skip[SLOTS] = { 0, 0 };
 static bool have_temp = 0;
 static struct dtime last_temp;
 static struct point *points = NULL;
@@ -97,19 +98,23 @@ void fan_temp(bool slot, const char *s)
 	bool good = 0;
 	long max = 0;
 	const char *next;
+	int i = -1;
 
 	do {
 		char *end;
 		long temp;
 
+		i++;
 		next = strchr(s, ' ');
 		if (!next)
 			next = strchr(s, 0);
 		temp = strtod(s, &end);
 		if (end == next) {
-			if (temp > max)
-				max = temp;
-			good = 1;
+			if (((temp_skip[slot] >> i) & 1) == 0) {
+				if (temp > max)
+					max = temp;
+				good = 1;
+			}
 		} else {
 			if (verbose)
 				fprintf(stderr, "bad temperature \"%.*s\"\n",
@@ -130,6 +135,29 @@ void fan_temp(bool slot, const char *s)
 	}
 	if (have_profile)
 		update_pwm();
+}
+
+
+void fan_skip(bool slot, const char *msg)
+{
+	char *tmp, *s;
+
+	temp_skip[slot] = 0;
+	if (!*msg)
+		return;
+	tmp = stralloc(msg);
+	for (s = strtok(tmp, ","); s; s = strtok(NULL, ",")) {
+		unsigned bus, dev, chan;
+		int i;
+
+		if (sscanf(s, "%u:%x:%u", &bus, &dev, &chan) != 3) {
+			fprintf(stderr, "invalid tchan skip \"%s\"\n", s);
+			continue;
+		}
+		i = (bus * 4 + dev - 0x48) * 8 + chan - 1;
+		temp_skip[slot] |= (uint64_t) 1 << i;
+	}
+	free(tmp);
 }
 
 

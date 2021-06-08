@@ -11,6 +11,7 @@
 #define	COORD_FAN_H
 
 void fan_temp(bool slot, const char *s);
+void fan_skip(bool slot, const char *s);
 void fan_profile(const char *s);
 void fan_idle(void);
 
