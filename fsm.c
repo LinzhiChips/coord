@@ -37,6 +37,18 @@ static void update_led(void)
 }
 
 
+/* ----- Command/script execution ------------------------------------------ */
+
+
+static void run(const char *cmd)
+{
+	if (testing)
+		printf("RUN %s\n", cmd);
+	else
+		system(cmd);
+}
+
+
 /* ----- HIGHLIGHT FSM ----------------------------------------------------- */
 
 
@@ -271,13 +283,13 @@ void ev_clear(void)
 		update_cond();
 	}
 	if (abnormal_cond & TS)
-		system("tshut clear");
+		run("tshut clear");
 	if (abnormal_cond & PS)
-		system("pshut clear");
+		run("pshut clear");
 	if (abnormal_cond & I2CS)
-		system("i2c-troubled clear");
+		run("i2c-troubled clear");
 	if (abnormal_cond & CARD)
-		system("card-troubled clear");
+		run("card-troubled clear");
 }
 
 
@@ -419,7 +431,7 @@ static bool user_long = 0;
 void ev_user(bool down)
 {
 	if (down && !button_down)
-		dtime_set(&button_down_since, NULL);
+		dtime_set(&button_down_since, now);
 	button_down = down;
 	if (down) {
 		dark_mode_cancel();
@@ -445,7 +457,7 @@ void ev_user(bool down)
 
 void ev_tick(void)
 {
-	if (!button_down || dtime_s(&button_down_since, NULL) < USER_LONG_S)
+	if (!button_down || dtime_s(&button_down_since, now) < USER_LONG_S)
 		return;
 	if (user_long)
 		return;

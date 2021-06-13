@@ -131,7 +131,7 @@ void fan_temp(bool slot, const char *s)
 	if (good) {
 		have_temp = 1;
 		max_temp[slot] = max;
-		dtime_set(&last_temp, NULL);
+		dtime_set(&last_temp, now);
 	}
 	if (have_profile)
 		update_pwm();
@@ -167,7 +167,7 @@ void fan_profile(const char *s)
 	const char *next;
 
 	if (!have_profile)
-		dtime_set(&last_temp, NULL);
+		dtime_set(&last_temp, now);
 	have_profile = 1;
 	free(points);
 	points = NULL;
@@ -199,7 +199,7 @@ void fan_idle(void)
 {
 	if (!have_profile)
 		return;
-	if (dtime_s(&last_temp, NULL) > MAX_TEMP_SILENCE_S) {
+	if (dtime_s(&last_temp, now) > MAX_TEMP_SILENCE_S) {
 		set_duty(100);
 		have_profile = 0;
 	}

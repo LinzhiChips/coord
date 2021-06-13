@@ -11,7 +11,7 @@ CFLAGS = -g -Wall -Wextra -Wshadow -Wno-unused-parameter \
 	 -Wmissing-prototypes -Wmissing-declarations \
 	 -I../libcommon
 override CFLAGS += $(CFLAGS_OVERRIDE)
-LDLIBS = -L../$(LIB_ARCH_PREFIX)libcommon -lcommon -lpthread -lmosquitto
+LDLIBS = -L../$(LIB_ARCH_PREFIX)libcommon -lcommon -lpthread -lmosquitto -lm
 
 OBJS = $(NAME).o fsm.o led.o mqtt.o fan.o action.o
 
@@ -29,4 +29,16 @@ $(NAME):	$(OBJS)
 
 spotless::
 		rm -f $(NAME)
+
+# ----- Tests -----------------------------------------------------------------
+
+.PHONY:		test tests
+
+test tests:
+		LANG= sh -c \
+		  'passed=0 && cd test && \
+		  for n in [a-z]*; do \
+		  [ $$n = core -o -z "$${n##*.*}" ] || \
+		  SCRIPT=$$n DIR=.. . ./$$n || exit; done; \
+		  echo "Passed all $$passed tests"'
 

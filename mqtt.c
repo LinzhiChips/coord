@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <assert.h>
 
 #include "linzhi/mqtt.h"
 
@@ -183,15 +184,18 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_1_SKIP, process_skip_1);
 	sub_string(MQTT_TOPIC_FAN_PROFILE, fan_profile);
 
-	mqtt_init(NULL, 0);
+	if (testing)
+		mqtt_testing();
+	else
+		mqtt_init(NULL, 0);
 }
 
 
 void mqtt_loop(void)
 {
+	assert(!testing);
 	while (1) {
 		mqtt_loop_once(TICK_MS);
-		dark_mode_idle();
-		ev_tick();
+		polled_actions();
 	}
 }

@@ -32,10 +32,15 @@ void run_event_action(const char *event)
 				if (verbose)
 					fprintf(stderr, "running %s:%s\n",
 					    e->event, e->action);
-				ret = system(e->action);
-				if (ret)
-					fprintf(stderr, "%s: exit code %d\n",
-					    event, ret);
+				if (testing) {
+					printf("RUN %s\n", e->action);
+				} else {
+					ret = system(e->action);
+					if (ret)
+						fprintf(stderr,
+						    "%s: exit code %d\n",
+						    event, ret);
+				}
 			}
 			return;
 		}

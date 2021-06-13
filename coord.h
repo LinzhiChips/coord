@@ -11,6 +11,7 @@
 #define	COORD_COORD_H
 
 #include <stdbool.h>
+#include <sys/time.h>
 
 
 #define	TICK_MS	100
@@ -18,5 +19,10 @@
 
 
 extern bool verbose;
+extern bool testing;
+extern const struct timespec *now;
+
+
+void polled_actions(void);
 
 #endif /* !COORD_COORD_H */

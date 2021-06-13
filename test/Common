@@ -1,0 +1,40 @@
+#!/bin/sh
+
+fail()
+{
+	echo FAILED "($SCRIPT)" 1>&2
+	cat _out
+	exit 1
+}
+
+
+try()
+{
+	echo -n "$1: " 1>&2
+	shift
+	$DIR/coord -t "$@" >_out 2>&1 || fail
+}
+
+
+expect()
+{
+	diff -u "$@" - _out >_diff || {
+		echo FAILED "($SCRIPT)" 1>&2
+		cat _diff
+		rm -f _out _diff
+		exit 1
+	}
+	echo PASSED 1>&2
+	rm -f _out _diff _test
+	passed=`expr ${passed:-0} + 1`
+}
+
+
+#
+# Getting to green is a little tricky. This convenience variable helps.
+#
+GREEN="/mine/pool/statistics:C:0 J:0 A:0 R:0 S:0"
+GREEN="$GREEN;/mine/pool/statistics:C:0 J:1 A:1 R:0 S:0"
+
+
+: ${DIR:=..}

@@ -12,6 +12,7 @@
 #include "linzhi/dtime.h"
 #include "linzhi/mqtt.h"
 
+#include "coord.h"
 #include "mqtt.h"
 #include "led.h"
 
@@ -57,7 +58,12 @@ static void do_led_set(enum led led)
 
 static void ether_on(bool on)
 {
-	mqtt_printf(MQTT_TOPIC_LED_ETHER, qos_ack, 1, "%u", on);
+	static int last = -1;
+
+	if (on != last) {
+		mqtt_printf(MQTT_TOPIC_LED_ETHER, qos_ack, 1, "%u", on);
+		last = on;
+	}
 }
 
 
@@ -75,7 +81,7 @@ void dark_mode_cancel(void)
 	do_led_set(curr_led);
 	ether_on(1);
 	dark = 0;
-	dark_t0 = dtime_s(NULL, NULL);
+	dark_t0 = dtime_s(NULL, now);
 }
 
 
@@ -85,7 +91,7 @@ void dark_mode_idle(void)
 
 	if (dark || curr_led != GREEN || !dark_timeout_s)
 		return;
-	t = dtime_s(NULL, NULL);
+	t = dtime_s(NULL, now);
 	if (t - dark_t0 < dark_timeout_s)
 		return;
 	do_led_set(0);
