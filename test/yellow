@@ -1,0 +1,60 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "yellow: thermal warning on and off" <<EOF
+/temp/warning:123 1
+/temp/warning:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "yellow: I2C warning on and off" <<EOF
+/sys/i2c/warning:456 3
+/sys/i2c/warning:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "yellow: card warning on and off" <<EOF
+/card/warning:768
+/card/warning:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "yellow: boot problem on and off" <<EOF
+/sys/boot/problem:something
+/sys/boot/problem:
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/sys/led/rgb:RG 0 0
+EOF
+
+###############################################################################

@@ -1,0 +1,46 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "blue: highlight on and off" <<EOF
+/sys/highlight:1
+/sys/highlight:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:B 1450 50
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "blue: enter recovery mode" <<EOF
+/sys/recovery-mode:1
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:B 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "blue: brief USER press" <<EOF
+/sys/button/user:1
+/sys/button/user:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/clear-shutdown:x
+/sys/led/rgb:B 0 0
+/sys/led/rgb:RG 0 0
+EOF
+
+###############################################################################

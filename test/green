@@ -1,0 +1,17 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "green: pretend we processed a mining job" <<EOF
+$GREEN
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+EOF
+
+###############################################################################

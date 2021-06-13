@@ -1,0 +1,114 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "dark: dark mode not enabled" <<EOF
+$GREEN
+@11
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "dark: dark mode at 10 s" <<EOF
+/sys/led/dark-mode:10
+$GREEN
+>before
+@9
+>after
+@11
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+before
+after
+/sys/led/rgb:- 0 0
+/sys/led/ether:0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "dark: disable dark mode while dark" <<EOF
+/sys/led/dark-mode:10
+$GREEN
+@11
+/sys/led/dark-mode:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+/sys/led/rgb:- 0 0
+/sys/led/ether:0
+/sys/led/rgb:G 0 0
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "dark: warning interrupts dark mode" <<EOF
+/sys/led/dark-mode:10
+$GREEN
+@11
+/temp/warning:123 1
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+/sys/led/rgb:- 0 0
+/sys/led/ether:0
+/sys/led/rgb:RG 100 100
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "dark: USER interrupts dark mode" <<EOF
+/sys/led/dark-mode:10
+$GREEN
+@11
+/sys/button/user:1
+/sys/button/user:0
+@20
+>soon
+@22
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:RG 0 0
+/sys/led/rgb:G 0 0
+/sys/led/rgb:- 0 0
+/sys/led/ether:0
+/sys/led/rgb:G 0 0
+/sys/led/ether:1
+/sys/clear-shutdown:x
+/sys/led/rgb:B 0 0
+/sys/led/rgb:G 0 0
+soon
+/sys/led/rgb:- 0 0
+/sys/led/ether:0
+EOF
+
+###############################################################################

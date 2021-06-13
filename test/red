@@ -1,0 +1,46 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "red: DCDC shutdown on and off" <<EOF
+/power/shutdown:123 1
+/power/shutdown:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:R 500 500
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "red: thermal shutdown on and off" <<EOF
+/temp/shutdown:456 2
+/temp/shutdown:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:R 500 500
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "red: I2C shutdown on and off" <<EOF
+/sys/i2c/shutdown:789 3
+/sys/i2c/shutdown:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:R 500 500
+/sys/led/rgb:RG 0 0
+EOF
+
+###############################################################################
