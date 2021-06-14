@@ -12,7 +12,15 @@ try()
 {
 	echo -n "$1: " 1>&2
 	shift
-	$DIR/coord -t "$@" >_out 2>&1 || fail
+	#
+	# This apparently redundant re-assigninment of CFG_SLOTx_SERIAL ensures
+	# they're in the environment of # "coord". Else, since the original
+	# assignment is when calling the "try" function, they would not be
+	# exported all that way.
+	#
+	CFG_SLOT0_SERIAL=$CFG_SLOT0_SERIAL \
+	    CFG_SLOT1_SERIAL=$CFG_SLOT1_SERIAL \
+	    $DIR/coord -t "$@" >_out 2>&1 || fail
 }
 
 
@@ -27,6 +35,31 @@ expect()
 	echo PASSED 1>&2
 	rm -f _out _diff _test
 	passed=`expr ${passed:-0} + 1`
+}
+
+
+temp()
+{
+	local base=$1
+	local i n
+	local s=
+
+	shift
+	i=0
+	while [ $i -lt 64 ]; do
+		local t=$base
+
+		for n in "$@"; do
+			if [ $i = ${n%:*} ]; then
+				t=${n#*:}
+				break
+			fi
+		done
+		[ "$s" ] && s="$s "
+		s="$s$t"
+		i=`expr $i + 1`
+	done
+	echo "$s"
 }
 
 

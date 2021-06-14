@@ -14,17 +14,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/time.h>
 
 #include "linzhi/alloc.h"
+#include "linzhi/dtime.h"
 #include "linzhi/mqtt.h"
 #include "linzhi/dtime.h"
 
 #include "coord.h"
 #include "mqtt.h"
+#include "tsense.h"
 #include "fan.h"
 
 
-#define	SLOTS	2
 #define	MAX_TEMP_SILENCE_S	60
 
 
@@ -95,11 +97,16 @@ static void update_pwm(void)
 
 void fan_temp(bool slot, const char *s)
 {
+	struct timespec t;
 	bool good = 0;
 	long max = 0;
 	const char *next;
 	int i = -1;
 
+	if (now)
+		t = *now;
+	else
+		dtime_get(&t);
 	do {
 		char *end;
 		long temp;
@@ -113,6 +120,7 @@ void fan_temp(bool slot, const char *s)
 			if (((temp_skip[slot] >> i) & 1) == 0) {
 				if (temp > max)
 					max = temp;
+				tsense_update(slot, &t, i);
 				good = 1;
 			}
 		} else {
@@ -151,7 +159,7 @@ void fan_skip(bool slot, const char *msg)
 		int i;
 
 		if (sscanf(s, "%u:%x:%u", &bus, &dev, &chan) != 3) {
-			fprintf(stderr, "invalid tchan skip \"%s\"\n", s);
+			fprintf(stderr, "invalid tsense skip \"%s\"\n", s);
 			continue;
 		}
 		i = (bus * 4 + dev - 0x48) * 8 + chan - 1;

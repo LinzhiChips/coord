@@ -37,6 +37,7 @@
 #define	MQTT_TOPIC_FAN_PROFILE	"/fan/profile"
 #define	MQTT_TOPIC_ALL_PWM_SET	"/fan/all/pwm-set"
 
+#define	MQTT_TOPIC_TEMP_OVERDUE	"/temp/%s/overdue"
 
 void mqtt_setup(void);
 void mqtt_loop(void);

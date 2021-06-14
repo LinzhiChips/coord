@@ -1,0 +1,145 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+CFG_SLOT0_SERIAL=x try "tsense: no failure" <<EOF
+@20
+/temp/0/current:`temp 10`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x try "tsense: single channel failure" <<EOF
+@20
+/temp/0/current:`temp 10 0:-`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x try "tsense: dual channel failure, different chips" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 37:-`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x try "tsense: dual channel failure, same chip" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:-`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 62,61,40
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x try "tsense: four channel failure, two chips" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:- 22:- 48:-`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 18,17,40 62,61,40
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x try "tsense: idem, in steps" <<EOF
+@10
+/temp/0/current:`temp 10 22:- 48:-`
+@20
+/temp/0/current:`temp 10 0:- 38:- 22:- 48:-`
+@35
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:35 18,17,35 62,61,25
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT1_SERIAL=y try "tsense: in steps, on slot 1" <<EOF
+@10
+/temp/1/current:`temp 10 16:- 54:-`
+@20
+/temp/1/current:`temp 10 9:- 47:- 16:- 54:-`
+@35
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/1/overdue:35 30,29,35 44,47,25
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT1_SERIAL=y try "tsense: four channels fail, one recovers" <<EOF
+@10
+/temp/1/current:`temp 10 16:- 54:-`
+@20
+/temp/1/current:`temp 10 9:- 47:- 16:- 54:-`
+@35
+/temp/1/current:`temp 10 9:- 16:- 54:-`
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/1/overdue:35 30,29,35 44,47,25
+/temp/1/overdue:35 30,29,35
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT1_SERIAL=y try "tsense: four channels fail, all recover" <<EOF
+@20
+/temp/1/current:`temp 10 9:- 47:- 16:- 54:-`
+@35
+/temp/1/current:`temp 10`
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/1/overdue:35 30,29,35 44,47,35
+/temp/1/overdue:35 30,29,35
+/sys/led/rgb:RG 0 0
+/temp/1/overdue:
+EOF
+
+###############################################################################

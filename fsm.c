@@ -137,6 +137,7 @@ enum abnormal_cond {
 	I2CW	= 1 << 4,	/* I2C warning */
 	CARD	= 1 << 5,	/* card (uSD) warning */
 	BOOT	= 1 << 6,	/* boot problem warning */
+	TSENSE	= 1 << 7,	/* temperature sensing fault */
 };
 
 
@@ -172,7 +173,7 @@ static void update_cond(void)
 		if (abnormal_cond & (TS | PS | I2CS)) {
 			abnormal_state = as_shutdown;
 			update_led();
-		} else if (abnormal_cond & (TW | CARD | I2CW | BOOT)) {
+		} else if (abnormal_cond & (TW | CARD | I2CW | BOOT | TSENSE)) {
 			abnormal_state = as_warn;
 			update_led();
 		}
@@ -193,8 +194,8 @@ static void update_cond(void)
 			abnormal_state = as_normal;
 			update_led();
 		}
-		if ((abnormal_cond & (TW | CARD | I2CW | BOOT)) &&
-		    !(abnormal_cond & ~(TW | CARD | I2CW | BOOT))) {
+		if ((abnormal_cond & (TW | CARD | I2CW | BOOT | TSENSE)) &&
+		    !(abnormal_cond & ~(TW | CARD | I2CW | BOOT | TSENSE))) {
 			abnormal_state = as_warn;
 			update_led();
 		}
@@ -274,6 +275,16 @@ void ev_boot_problem(const char *s)
 	update_cond();
 }
 
+
+
+void ev_tsense(bool on)
+{
+	if (on)
+		abnormal_cond |= TSENSE;
+	else
+		abnormal_cond &= ~TSENSE;
+	update_cond();
+}
 
 
 void ev_clear(void)

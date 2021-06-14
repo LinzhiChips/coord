@@ -7,6 +7,8 @@
  * A copy of the license can be found in the file COPYING.txt
  */
 
+#define	_GNU_SOURCE	/* for vasprintf */
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -20,6 +22,7 @@
 #include "led.h"
 #include "action.h"
 #include "fsm.h"
+#include "tsense.h"
 #include "fan.h"
 #include "mqtt.h"
 #include "coord.h"
@@ -28,6 +31,7 @@
 bool verbose = 0;
 bool testing = 0;
 const struct timespec *now = NULL;
+unsigned slots;
 
 
 /* ----- Testing ----------------------------------------------------------- */
@@ -71,7 +75,7 @@ static void process_line(char *s)
 
 static void run_test(void)
 {
-	char buf[100];
+	char buf[1000];
 
 	while (fgets(buf, sizeof(buf), stdin)) {
 		char *p, *s;
@@ -107,6 +111,38 @@ void polled_actions(void)
 {
 	dark_mode_idle();
 	ev_tick();
+	tsense_tick();
+}
+
+
+/* ----- Slot detection ---------------------------------------------------- */
+
+
+static const char *getenvf(const char *fmt, ...)
+{
+	va_list ap;
+	char *s;
+	const char *res;
+
+	va_start(ap, fmt);
+	if (vasprintf(&s, fmt, ap) < 0) {
+		perror("vasprintf");
+		exit(1);
+	}
+	va_end(ap);
+	res = getenv(s);
+	free(s);
+	return res && *res ? res : NULL; /* treat empty as unset */
+}
+
+
+static bool have_slot(unsigned slot)
+{
+	if (!getenvf("CFG_SLOT%u_SERIAL", slot))
+		return 0;
+	if (getenvf("CFG_SLOT%u_IGNORE", slot))
+		return 0;
+	return 1;
 }
 
 
@@ -155,9 +191,12 @@ int main(int argc, char **argv)
 		usage(*argv);
 	}
 
+	slots = have_slot(0) | have_slot(1) << 1;
+
 	fan_init();
 	mqtt_setup();
 	fsm_init();
+	tsense_init();
 	if (testing)
 		run_test();
 	else

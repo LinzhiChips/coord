@@ -29,6 +29,7 @@ void ev_i2cwarn(bool on);
 void ev_i2cshut(bool on);
 void ev_card_warn(bool on);
 void ev_boot_problem(const char *s);
+void ev_tsense(bool on);
 void ev_clear(void);
 
 /* POOL FSM */

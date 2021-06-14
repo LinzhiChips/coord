@@ -14,13 +14,17 @@
 #include <sys/time.h>
 
 
-#define	TICK_MS	100
+#define	TICK_MS		100
 #define	USER_LONG_S	2.0	/* long press */
+
+#define	SLOTS		2
+#define	CHIPS		32
 
 
 extern bool verbose;
 extern bool testing;
 extern const struct timespec *now;
+extern unsigned slots; /* bitmask for available slots */
 
 
 void polled_actions(void);
