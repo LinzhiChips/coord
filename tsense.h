@@ -13,6 +13,9 @@
 #include <stdbool.h>
 
 
+extern bool tsense_unreliable;
+
+
 void tsense_update(bool slot, const struct timespec *now, unsigned pos);
 void tsense_tick(void);
 void tsense_init(void);

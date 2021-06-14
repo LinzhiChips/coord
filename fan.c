@@ -57,15 +57,17 @@ static void update_pwm(void)
 	const struct point *last = NULL;
 	unsigned i, duty;
 
-	if (!have_temp) {
+	assert(have_profile);
+
+	if (!have_temp || tsense_unreliable) {
 		set_duty(100);
 		return;
 	}
 
-	assert(have_profile);
 	for (slot = 0; slot != SLOTS; slot++)
 		if (max_temp[slot] > temp)
 			temp = max_temp[slot];
+
 	for (i = 0; i != n_points; i++) {
 		if (points[i].temp > temp)
 			break;

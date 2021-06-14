@@ -142,4 +142,85 @@ expect <<EOF
 /temp/1/overdue:
 EOF
 
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
+    try "tsense: dual channel failure, same chip, on each board" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:-`
+/temp/1/current:`temp 10 9:- 47:-`
+@40
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 62,61,40
+/temp/1/overdue:40 44,47,40
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
+    try "tsense: both boards, slot 0 recovers" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:-`
+/temp/1/current:`temp 10 9:- 47:-`
+@40
+/temp/0/current:`temp 10`
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 62,61,40
+/temp/1/overdue:40 44,47,40
+/temp/0/overdue:
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
+    try "tsense: both boards, slot 1 recovers" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:-`
+/temp/1/current:`temp 10 9:- 47:-`
+@40
+/temp/1/current:`temp 10`
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 62,61,40
+/temp/1/overdue:40 44,47,40
+/temp/1/overdue:
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
+    try "tsense: both boards, both recover" <<EOF
+@20
+/temp/0/current:`temp 10 0:- 38:-`
+/temp/1/current:`temp 10 9:- 47:-`
+@40
+/temp/0/current:`temp 10`
+/temp/1/current:`temp 10`
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/temp/0/overdue:40 62,61,40
+/temp/1/overdue:40 44,47,40
+/temp/0/overdue:
+/sys/led/rgb:RG 0 0
+/temp/1/overdue:
+EOF
+
 ###############################################################################

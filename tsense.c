@@ -28,6 +28,8 @@
 #define	DIE2CHIP(d)	(((d) & ~2) >> 1 | ((((d) >> 1) ^ (d)) & 1))
 
 
+bool tsense_unreliable = 0;
+
 static struct timespec last[SLOTS][CHIPS];
 static bool overdue[SLOTS][CHIPS];
 
@@ -58,7 +60,7 @@ static unsigned pos2die(unsigned pos)
 
 static void tsense_warn(bool slot, const struct timespec *t)
 {
-	static bool warning = 0;
+	static bool warning[SLOTS] = { 0, };
 	char buf[CHIPS * (2 * 3 + 30) + 1];	/* 30 is for the delta time */
 	char *p = buf;
 	unsigned chip;
@@ -74,16 +76,18 @@ static void tsense_warn(bool slot, const struct timespec *t)
 	}
 	*p = 0;
 	if (p == buf) {
-		if (warning) {
+		warning[slot] = 0;
+		if (tsense_unreliable && !(warning[0] || warning[1])) {
 			ev_tsense(0);
-			warning = 0;
+			tsense_unreliable = 0;
 		}
 		mqtt_printf_arg(MQTT_TOPIC_TEMP_OVERDUE, qos_ack, 1,
 		    slot ? "1" : "0",  "%s", "");
 	} else {
-		if (!warning) {
+		warning[slot] = 1;
+		if (!tsense_unreliable) {
 			ev_tsense(1);
-			warning = 1;
+			tsense_unreliable = 1;
 		}
 		mqtt_printf_arg(MQTT_TOPIC_TEMP_OVERDUE, qos_ack, 1,
 		    slot ? "1" : "0",  "%d %s", (int) time_s(t), buf);
