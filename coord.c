@@ -32,6 +32,7 @@ bool verbose = 0;
 bool testing = 0;
 const struct timespec *now = NULL;
 unsigned slots;
+bool separate_mined;
 
 
 /* ----- Testing ----------------------------------------------------------- */
@@ -192,6 +193,7 @@ int main(int argc, char **argv)
 	}
 
 	slots = have_slot(0) | have_slot(1) << 1;
+	separate_mined = getenv("CFG_SEPARATE_MINED");
 
 	fan_init();
 	mqtt_setup();

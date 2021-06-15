@@ -25,6 +25,7 @@ extern bool verbose;
 extern bool testing;
 extern const struct timespec *now;
 extern unsigned slots; /* bitmask for available slots */
+extern bool separate_mined;
 
 
 void polled_actions(void);

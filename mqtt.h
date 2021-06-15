@@ -39,6 +39,16 @@
 
 #define	MQTT_TOPIC_TEMP_OVERDUE	"/temp/%s/overdue"
 
+#define	MQTT_TOPIC_MINED_TIME	"/daemon/mined/time"
+#define	MQTT_TOPIC_MINED0_TIME	"/daemon/mined0/time"
+#define	MQTT_TOPIC_MINED1_TIME	"/daemon/mined1/time"
+#define	MQTT_TOPIC_DAEMON_START	"/daemon/%s/start"
+#define	MQTT_TOPIC_DAEMON_STOP	"/daemon/%s/stop"
+
+#define	MQTT_TOPIC_ONOFF_MASTER	"/power/on/master"
+#define	MQTT_TOPIC_ONOFF_SLOT0	"/power/on/slot0"
+#define	MQTT_TOPIC_ONOFF_SLOT1	"/power/on/slot1"
+
 void mqtt_setup(void);
 void mqtt_loop(void);
 

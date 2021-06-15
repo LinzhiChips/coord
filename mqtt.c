@@ -18,6 +18,7 @@
 #include "coord.h"
 #include "fsm.h"
 #include "fan.h"
+#include "onoff.h"
 #include "mqtt.h"
 
 
@@ -83,6 +84,49 @@ static void process_skip_0(const char *s)
 static void process_skip_1(const char *s)
 {
 	fan_skip(1, s);
+}
+
+
+static void process_mined(const char *s)
+{
+	bool running = strcmp(s, "0");
+
+	/*
+	 * We consider the whole system as "slot 0".
+	 * @@@ This would need changing if we ever want to allow switching
+	 * between single and separate mineds without a reboot.
+	 */
+	onoff_mined(0, running);
+}
+
+
+static void process_mined0(const char *s)
+{
+	onoff_mined(0, strcmp(s, "0"));
+}
+
+
+static void process_mined1(const char *s)
+{
+	onoff_mined(1, strcmp(s, "0"));
+}
+
+
+static void process_onoff_master(const char *s)
+{
+	onoff_master_switch(strcmp(s, "0"));
+}
+
+
+static void process_onoff_slot0(const char *s)
+{
+	onoff_slot_switch(0, strcmp(s, "0"));
+}
+
+
+static void process_onoff_slot1(const char *s)
+{
+	onoff_slot_switch(1, strcmp(s, "0"));
 }
 
 
@@ -183,6 +227,13 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_0_SKIP, process_skip_0);
 	sub_string(MQTT_TOPIC_1_SKIP, process_skip_1);
 	sub_string(MQTT_TOPIC_FAN_PROFILE, fan_profile);
+
+	sub_string(MQTT_TOPIC_MINED_TIME, process_mined);
+	sub_string(MQTT_TOPIC_MINED0_TIME, process_mined0);
+	sub_string(MQTT_TOPIC_MINED1_TIME, process_mined1);
+	sub_string(MQTT_TOPIC_ONOFF_MASTER, process_onoff_master);
+	sub_string(MQTT_TOPIC_ONOFF_SLOT0, process_onoff_slot0);
+	sub_string(MQTT_TOPIC_ONOFF_SLOT1, process_onoff_slot1);
 
 	if (testing)
 		mqtt_testing();

@@ -1,0 +1,124 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "onoff: master off for running single mined" <<EOF
+/daemon/mined/time:123
+/power/on/master:0
+/daemon/mined/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/stop:x
+LHADM  down
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master off then on (no overlap) for single mined" <<EOF
+/daemon/mined/time:123
+/power/on/master:0
+/daemon/mined/time:0
+/power/on/master:1
+/daemon/mined/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/stop:x
+LHADM  down
+/daemon/mined/start:x
+UP
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master off then on (with overlap) for single mined" <<EOF
+/daemon/mined/time:123
+/power/on/master:0
+/power/on/master:1
+/daemon/mined/time:0
+/daemon/mined/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/stop:x
+/daemon/mined/start:x
+UP
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master off-on-off (overlap on on-off) for single mined" <<EOF
+/daemon/mined/time:123
+/power/on/master:0
+/daemon/mined/time:0
+/power/on/master:1
+/power/on/master:0
+/daemon/mined/time:123
+/daemon/mined/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/stop:x
+LHADM  down
+/daemon/mined/start:x
+/daemon/mined/stop:x
+LHADM  down
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master off-on after manual stop for single mined" <<EOF
+/daemon/mined/time:0
+/power/on/master:0
+/daemon/mined/time:0
+/power/on/master:1
+/daemon/mined/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+MANUAL STOP ?
+LHADM  down
+/daemon/mined/start:x
+UP
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: slot 0 off for running single mined" <<EOF
+/daemon/mined/time:123
+/power/on/slot0:0
+/daemon/mined/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/stop:x
+LHADM  down
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: slot 1 off for running single mined (does nothing)" <<EOF
+/daemon/mined/time:123
+/power/on/slot1:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+
+###############################################################################
