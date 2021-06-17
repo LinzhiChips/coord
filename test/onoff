@@ -3,44 +3,69 @@
 
 ###############################################################################
 
-try "onoff: master off for running single mined" <<EOF
-/daemon/mined/time:123
-/power/on/master:0
-/daemon/mined/time:0
-EOF
-
-expect <<EOF
-/sys/led/rgb:RG 0 0
-/sys/led/ether:1
-/daemon/mined/stop:x
-/config/user/SWITCH_LAST/set:off
-LHADM  down
-EOF
-
-# -----------------------------------------------------------------------------
-
-try "onoff: master off then on (no overlap) for single mined" <<EOF
-/daemon/mined/time:123
-/power/on/master:0
-/daemon/mined/time:0
+try "onoff: master+slot0 off for running single mined" <<EOF
 /power/on/master:1
+/power/on/slot0:1
 /daemon/mined/time:123
 EOF
 
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/daemon/mined/stop:x
-/config/user/SWITCH_LAST/set:off
-LHADM  down
-/daemon/mined/start:x
 /config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
 UP
 EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: master off then on (with overlap) for single mined" <<EOF
+try "onoff: master+slot0 on then master off (no overlap) for single mined" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined/time:123
+/power/on/master:0
+/daemon/mined/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+UP
+/daemon/mined/stop:x
+/config/user/SWITCH_LAST/set:off
+LHADM  down
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master on then off (with overlap) for single mined" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/power/on/master:0
+/daemon/mined/time:123
+/daemon/mined/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+/config/user/SWITCH_LAST/set:off
+/daemon/mined/stop:x
+LHADM  down
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "onoff: master on-off-on (overlap on off-on) for single mined" <<EOF
+/power/on/master:1
+/power/on/slot0:1
 /daemon/mined/time:123
 /power/on/master:0
 /power/on/master:1
@@ -51,6 +76,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+UP
 /daemon/mined/stop:x
 /config/user/SWITCH_LAST/set:off
 /config/user/SWITCH_LAST/set:
@@ -60,12 +89,9 @@ EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: master off-on-off (overlap on on-off) for single mined" <<EOF
-/daemon/mined/time:123
-/power/on/master:0
-/daemon/mined/time:0
+try "onoff: master on with manual stop for single mined" <<EOF
 /power/on/master:1
-/power/on/master:0
+/power/on/slot0:1
 /daemon/mined/time:123
 /daemon/mined/time:0
 EOF
@@ -73,40 +99,18 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/daemon/mined/stop:x
-/config/user/SWITCH_LAST/set:off
-LHADM  down
-/daemon/mined/start:x
 /config/user/SWITCH_LAST/set:
-/config/user/SWITCH_LAST/set:off
-/daemon/mined/stop:x
-LHADM  down
-EOF
-
-# -----------------------------------------------------------------------------
-
-try "onoff: master off-on after manual stop for single mined" <<EOF
-/daemon/mined/time:0
-/power/on/master:0
-/daemon/mined/time:0
-/power/on/master:1
-/daemon/mined/time:123
-EOF
-
-expect <<EOF
-/sys/led/rgb:RG 0 0
-/sys/led/ether:1
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+UP
 MANUAL STOP ?
-LHADM  down
-/config/user/SWITCH_LAST/set:off
-/daemon/mined/start:x
-/config/user/SWITCH_LAST/set:
-UP
 EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: slot 0 off for running single mined" <<EOF
+try "onoff: slot 0 on-off for running single mined" <<EOF
+/power/on/master:1
+/power/on/slot0:1
 /daemon/mined/time:123
 /power/on/slot0:0
 /daemon/mined/time:0
@@ -115,6 +119,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+UP
 /daemon/mined/stop:x
 /config/user0/SWITCH_LAST/set:off
 LHADM  down
@@ -122,7 +130,9 @@ EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: slot 1 off for running single mined (does nothing)" <<EOF
+try "onoff: slot 1 on-off for running single mined (does nothing)" <<EOF
+/power/on/master:1
+/power/on/slot0:1
 /daemon/mined/time:123
 /power/on/slot1:0
 EOF
@@ -130,7 +140,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/daemon/mined/stop:x
+/config/user/SWITCH_LAST/set:
+/daemon/mined/start:x
+/config/user0/SWITCH_LAST/set:
+UP
 /config/user1/SWITCH_LAST/set:off
 EOF
 

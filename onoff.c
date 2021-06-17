@@ -27,10 +27,10 @@ enum state {
 	s_start,	/* start requested */
 };
 
-static enum state state[SLOTS] = { s_on, s_on };
-static bool master_goal = 1;
-static bool slot_goal[SLOTS] = { 1, 1 };
-static bool is_running[SLOTS];
+static enum state state[SLOTS] = { s_off, s_off };
+static bool master_goal = 0;
+static bool slot_goal[SLOTS] = { 0, 0 };
+static bool is_running[SLOTS] = { 0, 0 };
 
 static const char *state_name[] = {
 	[s_on]		= "ON",
@@ -180,8 +180,7 @@ static void action(void)
 		if (have_slot(1))
 			step(1, "mined1", "1", master_goal && slot_goal[1]);
 	} else {
-		step(0, "mined", "",
-		    master_goal && slot_goal[0] && slot_goal[1]);
+		step(0, "mined", "", master_goal && slot_goal[0]);
 	}
 }
 
