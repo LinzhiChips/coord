@@ -49,6 +49,10 @@
 #define	MQTT_TOPIC_ONOFF_SLOT0	"/power/on/slot0"
 #define	MQTT_TOPIC_ONOFF_SLOT1	"/power/on/slot1"
 
+#define	MQTT_TOPIC_CFG_MASTER	"/config/user/SWITCH_LAST/set"
+#define	MQTT_TOPIC_CFG_SLOT0	"/config/user0/SWITCH_LAST/set"
+#define	MQTT_TOPIC_CFG_SLOT1	"/config/user1/SWITCH_LAST/set"
+
 void mqtt_setup(void);
 void mqtt_loop(void);
 

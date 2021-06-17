@@ -200,6 +200,7 @@ void onoff_master_switch(bool on)
 {
 	master_goal = on;
 	action();
+	mqtt_printf(MQTT_TOPIC_CFG_MASTER, qos_ack, 0, on ? "" : "off");
 }
 
 
@@ -207,4 +208,6 @@ void onoff_slot_switch(bool slot, bool on)
 {
 	slot_goal[slot] = on;
 	action();
+	mqtt_printf(slot ? MQTT_TOPIC_CFG_SLOT1 : MQTT_TOPIC_CFG_SLOT0,
+	    qos_ack, 0, on ? "" : "off");
 }
