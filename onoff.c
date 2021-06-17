@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "linzhi/mqtt.h"
 
@@ -197,16 +198,37 @@ void onoff_mined(bool slot, bool running)
 
 void onoff_master_switch(bool on)
 {
+	if (master_goal != on)
+		mqtt_printf(MQTT_TOPIC_CFG_MASTER, qos_ack, 0, on ? "" : "off");
 	master_goal = on;
 	action();
-	mqtt_printf(MQTT_TOPIC_CFG_MASTER, qos_ack, 0, on ? "" : "off");
 }
 
 
 void onoff_slot_switch(bool slot, bool on)
 {
+	if (slot_goal[slot] != on)
+		mqtt_printf(slot ? MQTT_TOPIC_CFG_SLOT1 : MQTT_TOPIC_CFG_SLOT0,
+		    qos_ack, 0, on ? "" : "off");
 	slot_goal[slot] = on;
 	action();
-	mqtt_printf(slot ? MQTT_TOPIC_CFG_SLOT1 : MQTT_TOPIC_CFG_SLOT0,
-	    qos_ack, 0, on ? "" : "off");
+}
+
+
+/* ----- Initialization ---------------------------------------------------- */
+
+
+static bool getenv_on(const char *name)
+{
+	const char *s = getenv(name);
+
+	return !s || strcmp(s, "off");
+}
+
+
+void onoff_init(void)
+{
+	master_goal = getenv_on("CFG_SWITCH_LAST");
+	slot_goal[0] = getenv_on("CFG_SLOT0_SWITCH_LAST");
+	slot_goal[1] = getenv_on("CFG_SLOT1_SWITCH_LAST");
 }

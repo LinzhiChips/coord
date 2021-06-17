@@ -24,6 +24,7 @@
 #include "fsm.h"
 #include "tsense.h"
 #include "fan.h"
+#include "onoff.h"
 #include "mqtt.h"
 #include "coord.h"
 
@@ -195,6 +196,7 @@ int main(int argc, char **argv)
 	slots = have_slot(0) | have_slot(1) << 1;
 	separate_mined = getenv("CFG_SEPARATE_MINED");
 
+	onoff_init();
 	fan_init();
 	mqtt_setup();
 	fsm_init();

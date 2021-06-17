@@ -18,4 +18,6 @@ void onoff_mined(bool slot, bool running);
 void onoff_master_switch(bool on);
 void onoff_slot_switch(bool slot, bool on);
 
+void onoff_init(void);
+
 #endif /* !COORD_ONOFF_H */

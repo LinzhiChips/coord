@@ -3,7 +3,7 @@
 
 ###############################################################################
 
-try "onoff: master+slot0 off for running single mined" <<EOF
+try "onoff: master+slot0 on for running single mined" <<EOF
 /power/on/master:1
 /power/on/slot0:1
 /daemon/mined/time:123
@@ -12,9 +12,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
 EOF
 
@@ -31,12 +29,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
-/daemon/mined/stop:x
 /config/user/SWITCH_LAST/set:off
+/daemon/mined/stop:x
 LHADM  down
 EOF
 
@@ -53,9 +49,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 /config/user/SWITCH_LAST/set:off
 /daemon/mined/stop:x
 LHADM  down
@@ -76,12 +70,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
-/daemon/mined/stop:x
 /config/user/SWITCH_LAST/set:off
+/daemon/mined/stop:x
 /config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
 UP
@@ -99,9 +91,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
 MANUAL STOP ?
 EOF
@@ -119,12 +109,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
-/daemon/mined/stop:x
 /config/user0/SWITCH_LAST/set:off
+/daemon/mined/stop:x
 LHADM  down
 EOF
 
@@ -140,9 +128,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
-/config/user/SWITCH_LAST/set:
 /daemon/mined/start:x
-/config/user0/SWITCH_LAST/set:
 UP
 /config/user1/SWITCH_LAST/set:off
 EOF

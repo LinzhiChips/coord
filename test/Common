@@ -13,13 +13,16 @@ try()
 	echo -n "$1: " 1>&2
 	shift
 	#
-	# This apparently redundant re-assigninment of CFG_SLOTx_SERIAL ensures
-	# they're in the environment of # "coord". Else, since the original
-	# assignment is when calling the "try" function, they would not be
-	# exported all that way.
+	# This apparently redundant re-assigninment of CFG_SLOTx_SERIAL and
+	# CFG_x_SWITCH_LAST ensures they're in the environment of "coord".
+	# Else, since the original assignment is when calling the "try"
+	# function, they would not be exported all that way.
 	#
 	CFG_SLOT0_SERIAL=$CFG_SLOT0_SERIAL \
 	    CFG_SLOT1_SERIAL=$CFG_SLOT1_SERIAL \
+	    CFG_SWITCH_LAST=$CFG_SWITCH_LAST \
+	    CFG_SLOT0_SWITCH_LAST=$CFG_SLOT0_SWITCH_LAST \
+	    CFG_SLOT1_SWITCH_LAST=$CFG_SLOT1_SWITCH_LAST \
 	    $DIR/coord -t "$@" >_out 2>&1 || fail
 }
 
