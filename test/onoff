@@ -111,7 +111,7 @@ expect <<EOF
 /sys/led/ether:1
 /daemon/mined/start:x
 UP
-/config/user0/SWITCH_LAST/set:off
+/config/user/SWITCH_0_LAST/set:off
 /daemon/mined/stop:x
 LHADM  down
 EOF
@@ -130,7 +130,7 @@ expect <<EOF
 /sys/led/ether:1
 /daemon/mined/start:x
 UP
-/config/user1/SWITCH_LAST/set:off
+/config/user/SWITCH_1_LAST/set:off
 EOF
 
 ###############################################################################

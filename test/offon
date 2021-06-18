@@ -3,7 +3,7 @@
 
 ###############################################################################
 
-CFG_SWITCH_LAST=off CFG_SLOT0_SWITCH_LAST=off \
+CFG_SWITCH_LAST=off CFG_SWITCH_0_LAST=off \
     try "offon: master+slot0 off-on for running single mined" <<EOF
 /power/on/master:0
 /power/on/slot0:0
@@ -16,7 +16,7 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
-/config/user0/SWITCH_LAST/set:
+/config/user/SWITCH_0_LAST/set:
 /daemon/mined/start:x
 UP
 EOF

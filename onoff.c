@@ -229,6 +229,6 @@ static bool getenv_on(const char *name)
 void onoff_init(void)
 {
 	master_goal = getenv_on("CFG_SWITCH_LAST");
-	slot_goal[0] = getenv_on("CFG_SLOT0_SWITCH_LAST");
-	slot_goal[1] = getenv_on("CFG_SLOT1_SWITCH_LAST");
+	slot_goal[0] = getenv_on("CFG_SWITCH_0_LAST");
+	slot_goal[1] = getenv_on("CFG_SWITCH_1_LAST");
 }
