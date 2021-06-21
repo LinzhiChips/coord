@@ -3,7 +3,8 @@
 
 ###############################################################################
 
-try "onoff: master+slot0 on for running single mined" <<EOF
+CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
+    try "onoffsngonw: master+slot0 on" <<EOF
 /power/on/master:1
 /power/on/slot0:1
 /daemon/mined/time:123
@@ -18,9 +19,11 @@ EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: master+slot0 on then master off (no overlap) for single mined" <<EOF
+CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
+    try "onoffsngtwo: master+slots on then master off (no overlap)" <<EOF
 /power/on/master:1
 /power/on/slot0:1
+/power/on/slot1:1
 /daemon/mined/time:123
 /power/on/master:0
 /daemon/mined/time:0
@@ -33,77 +36,21 @@ expect <<EOF
 UP
 /config/user/SWITCH_LAST/set:off
 /daemon/mined/stop:x
-LHADM  down
+LHADM 0 down
+LHADM 1 down
 EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: master on then off (with overlap) for single mined" <<EOF
+CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
+    try "onoffsngtwo: master+slots on then slot0 off (no overlap)" <<EOF
 /power/on/master:1
 /power/on/slot0:1
-/power/on/master:0
-/daemon/mined/time:123
-/daemon/mined/time:0
-EOF
-
-expect <<EOF
-/sys/led/rgb:RG 0 0
-/sys/led/ether:1
-/daemon/mined/start:x
-/config/user/SWITCH_LAST/set:off
-/daemon/mined/stop:x
-LHADM  down
-EOF
-
-# -----------------------------------------------------------------------------
-
-try "onoff: master on-off-on (overlap on off-on) for single mined" <<EOF
-/power/on/master:1
-/power/on/slot0:1
-/daemon/mined/time:123
-/power/on/master:0
-/power/on/master:1
-/daemon/mined/time:0
-/daemon/mined/time:123
-EOF
-
-expect <<EOF
-/sys/led/rgb:RG 0 0
-/sys/led/ether:1
-/daemon/mined/start:x
-UP
-/config/user/SWITCH_LAST/set:off
-/daemon/mined/stop:x
-/config/user/SWITCH_LAST/set:
-/daemon/mined/start:x
-UP
-EOF
-
-# -----------------------------------------------------------------------------
-
-try "onoff: master on with manual stop for single mined" <<EOF
-/power/on/master:1
-/power/on/slot0:1
-/daemon/mined/time:123
-/daemon/mined/time:0
-EOF
-
-expect <<EOF
-/sys/led/rgb:RG 0 0
-/sys/led/ether:1
-/daemon/mined/start:x
-UP
-MANUAL STOP ?
-EOF
-
-# -----------------------------------------------------------------------------
-
-try "onoff: slot 0 on-off for running single mined" <<EOF
-/power/on/master:1
-/power/on/slot0:1
+/power/on/slot1:1
 /daemon/mined/time:123
 /power/on/slot0:0
 /daemon/mined/time:0
+/daemon/mined/time:123
 EOF
 
 expect <<EOF
@@ -113,16 +60,22 @@ expect <<EOF
 UP
 /config/user/SWITCH_0_LAST/set:off
 /daemon/mined/stop:x
-LHADM  down
+LHADM 0 down
+/daemon/mined/start:x
+UP
 EOF
 
 # -----------------------------------------------------------------------------
 
-try "onoff: slot 1 on-off for running single mined (does nothing)" <<EOF
+CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
+    try "onoffsngtwo: master+slots on then slot1 off (no overlap)" <<EOF
 /power/on/master:1
 /power/on/slot0:1
+/power/on/slot1:1
 /daemon/mined/time:123
 /power/on/slot1:0
+/daemon/mined/time:0
+/daemon/mined/time:123
 EOF
 
 expect <<EOF
@@ -131,6 +84,42 @@ expect <<EOF
 /daemon/mined/start:x
 UP
 /config/user/SWITCH_1_LAST/set:off
+/daemon/mined/stop:x
+LHADM 1 down
+/daemon/mined/start:x
+UP
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
+    try "onoffsngtwo: master+slots on then slot1 off-on (no overlap)" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/power/on/slot1:1
+/daemon/mined/time:123
+/power/on/slot1:0
+/daemon/mined/time:0
+/daemon/mined/time:123
+/power/on/slot1:1
+/daemon/mined/time:0
+/daemon/mined/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined/start:x
+UP
+/config/user/SWITCH_1_LAST/set:off
+/daemon/mined/stop:x
+LHADM 1 down
+/daemon/mined/start:x
+UP
+/config/user/SWITCH_1_LAST/set:
+/daemon/mined/stop:x
+/daemon/mined/start:x
+UP
 EOF
 
 ###############################################################################

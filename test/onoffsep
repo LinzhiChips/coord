@@ -1,0 +1,146 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: master+slot0 on" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined0/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+UP 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: master+slot0 on then master off (no overlap)" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined0/time:123
+/power/on/master:0
+/daemon/mined0/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+UP 0
+/config/user/SWITCH_LAST/set:off
+/daemon/mined0/stop:x
+LHADM 0 down
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: master on then off (with overlap)" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/power/on/master:0
+/daemon/mined0/time:123
+/daemon/mined0/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+/config/user/SWITCH_LAST/set:off
+/daemon/mined0/stop:x
+LHADM 0 down
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: master on-off-on (overlap on off-on)" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined0/time:123
+/power/on/master:0
+/power/on/master:1
+/daemon/mined0/time:0
+/daemon/mined0/time:123
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+UP 0
+/config/user/SWITCH_LAST/set:off
+/daemon/mined0/stop:x
+/config/user/SWITCH_LAST/set:
+/daemon/mined0/start:x
+UP 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: master on with manual stop" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined0/time:123
+/daemon/mined0/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+UP 0
+MANUAL STOP ?
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    try "onoffsep: slot 0 on-off" <<EOF
+/power/on/master:1
+/power/on/slot0:1
+/daemon/mined0/time:123
+/power/on/slot0:0
+/daemon/mined0/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined0/start:x
+UP 0
+/config/user/SWITCH_0_LAST/set:off
+/daemon/mined0/stop:x
+LHADM 0 down
+EOF
+
+# -----------------------------------------------------------------------------
+
+CFG_SEPARATE_MINED=y CFG_SLOT1_SERIAL=xyz \
+    try "onoffsep: master+slot1 on then master off (no overlap)" <<EOF
+/power/on/master:1
+/power/on/slot1:1
+/daemon/mined1/time:123
+/power/on/master:0
+/daemon/mined1/time:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/daemon/mined1/start:x
+UP 1
+/config/user/SWITCH_LAST/set:off
+/daemon/mined1/stop:x
+LHADM 1 down
+EOF
+
+###############################################################################

@@ -22,16 +22,22 @@
 
 
 enum state {
-	s_on,		/* powered on */
+	s_on,		/* running / powered on */
 	s_stop,		/* stop requested */
-	s_off,		/* powered down */
+	s_off,		/* stopped / powered down */
 	s_start,	/* start requested */
 };
 
 static enum state state[SLOTS] = { s_off, s_off };
-static bool master_goal = 0;
-static bool slot_goal[SLOTS] = { 0, 0 };
+	/* What we think mined is doing. Only state[0] is used if single
+	   mined. */
 static bool is_running[SLOTS] = { 0, 0 };
+	/* What kunai says mined is doing. Only running[0] is used if single
+	   mined. */
+static bool powered[SLOTS] = { 0, 0 };
+	/* Slot state. Not needed when using separate mineds. */
+static bool master_goal = 0;		/* Master switch */
+static bool slot_goal[SLOTS] = { 0, 0 };/* Per-slot switches */
 
 static const char *state_name[] = {
 	[s_on]		= "ON",
@@ -85,7 +91,7 @@ static void down(const char *arg)
 static void up(const char *arg)
 {
 	if (testing) {
-		if (*arg)
+		if (arg && *arg)
 			printf("UP %s\n", arg);
 		else
 			printf("UP\n");
@@ -100,7 +106,8 @@ static void up(const char *arg)
 /* ----- State machines ---------------------------------------------------- */
 
 
-static void step(bool slot, const char *daemon, const char *arg, bool goal)
+static void step_separate(bool slot, const char *daemon, const char *arg,
+    bool goal)
 {
 	if (verbose)
 		fprintf(stderr, "step(%u, %s, %s, %u) state %s, running %u\n",
@@ -121,7 +128,8 @@ static void step(bool slot, const char *daemon, const char *arg, bool goal)
 				stop(daemon);
 				state[slot] = s_stop;
 			} else {
-				down(arg);
+				if (arg)
+					down(arg);
 				state[slot] = s_off;
 			}
 		}
@@ -133,7 +141,8 @@ static void step(bool slot, const char *daemon, const char *arg, bool goal)
 			start(daemon);
 			state[slot] = s_start;
 		} else {
-			down(arg);
+			if (arg)
+				down(arg);
 			state[slot] = s_off;
 		}
 		break;
@@ -173,15 +182,76 @@ static void step(bool slot, const char *daemon, const char *arg, bool goal)
 }
 
 
+static void lhadm_adjust(bool slot, const char *s, bool want)
+{
+	if (want == powered[slot])
+		return;
+	if (!want)
+		down(s);
+	powered[slot] = want;
+}
+
+
+static void step_single(void)
+{
+	bool want_slot0 = have_slot(0) && master_goal && slot_goal[0];
+	bool want_slot1 = have_slot(1) && master_goal && slot_goal[1];
+
+	/* before we can change the power settings, we need to shut down
+	   mined */
+	if ((want_slot0 != powered[0]) || (want_slot1 != powered[1])) {
+		switch (state[0]) {
+		case s_on:
+			if (!is_running[0]) {
+				if (testing)
+					printf("MANUAL STOP ?\n");
+				return;
+			}
+			stop("mined");
+			state[0] = s_stop;
+			return;
+		case s_stop:
+			if (is_running[0])
+				return;
+			state[0] = s_off;
+			break;
+		case s_off:
+			if (is_running[0]) {
+				if (testing)
+					printf("MANUAL START ?\n");
+				return;
+			}
+			/* we're good, proceed */
+			break;
+		case s_start:
+			if (is_running[0]) {
+				stop("mined");
+				state[0] = s_stop;
+			}
+			return;
+		default:
+			abort();
+
+		}
+		lhadm_adjust(0, "0", want_slot0);
+		lhadm_adjust(1, "1", want_slot1);
+	}
+
+	step_separate(0, "mined", NULL, want_slot0 || want_slot1);
+}
+
+
 static void action(void)
 {
 	if (separate_mined) {
 		if (have_slot(0))
-			step(0, "mined0", "0", master_goal && slot_goal[0]);
+			step_separate(0, "mined0", "0",
+			    master_goal && slot_goal[0]);
 		if (have_slot(1))
-			step(1, "mined1", "1", master_goal && slot_goal[1]);
+			step_separate(1, "mined1", "1",
+			    master_goal && slot_goal[1]);
 	} else {
-		step(0, "mined", "", master_goal && slot_goal[0]);
+		step_single();
 	}
 }
 

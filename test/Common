@@ -23,6 +23,7 @@ try()
 	    CFG_SWITCH_LAST=$CFG_SWITCH_LAST \
 	    CFG_SWITCH_0_LAST=$CFG_SWITCH_0_LAST \
 	    CFG_SWITCH_1_LAST=$CFG_SWITCH_1_LAST \
+	    CFG_SEPARATE_MINED=$CFG_SEPARATE_MINED \
 	    $DIR/coord -t "$@" >_out 2>&1 || fail
 }
 

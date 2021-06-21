@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 	}
 
 	slots = have_slot(0) | have_slot(1) << 1;
-	separate_mined = getenv("CFG_SEPARATE_MINED");
+	separate_mined = getenvf("CFG_SEPARATE_MINED");
 
 	onoff_init();
 	fan_init();

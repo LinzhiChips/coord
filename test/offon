@@ -3,13 +3,14 @@
 
 ###############################################################################
 
-CFG_SWITCH_LAST=off CFG_SWITCH_0_LAST=off \
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    CFG_SWITCH_LAST=off CFG_SWITCH_0_LAST=off \
     try "offon: master+slot0 off-on for running single mined" <<EOF
 /power/on/master:0
 /power/on/slot0:0
 /power/on/master:1
 /power/on/slot0:1
-/daemon/mined/time:123
+/daemon/mined0/time:123
 EOF
 
 expect <<EOF
@@ -17,26 +18,27 @@ expect <<EOF
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
 /config/user/SWITCH_0_LAST/set:
-/daemon/mined/start:x
-UP
+/daemon/mined0/start:x
+UP 0
 EOF
 
 # -----------------------------------------------------------------------------
 
-CFG_SWITCH_LAST=off \
+CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
+    CFG_SWITCH_LAST=off \
     try "offon: master off-on for running single mined" <<EOF
 /power/on/master:0
 /power/on/slot0:1
 /power/on/master:1
-/daemon/mined/time:123
+/daemon/mined0/time:123
 EOF
 
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
-/daemon/mined/start:x
-UP
+/daemon/mined0/start:x
+UP 0
 EOF
 
 ###############################################################################
