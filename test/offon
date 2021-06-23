@@ -2,7 +2,7 @@
 . ./Common
 
 ###############################################################################
-
+ 
 CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
     CFG_SWITCH_LAST=off CFG_SWITCH_0_LAST=off \
     try "offon: master+slot0 off-on for running single mined" <<EOF
@@ -12,18 +12,19 @@ CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
 /power/on/slot0:1
 /daemon/mined0/time:123
 EOF
-
+ 
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
 /config/user/SWITCH_0_LAST/set:
+LHADM 0 up
 /daemon/mined0/start:x
-UP 0
+READY 0
 EOF
-
+ 
 # -----------------------------------------------------------------------------
-
+ 
 CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
     CFG_SWITCH_LAST=off \
     try "offon: master off-on for running single mined" <<EOF
@@ -32,13 +33,14 @@ CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
 /power/on/master:1
 /daemon/mined0/time:123
 EOF
-
+ 
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
+LHADM 0 up
 /daemon/mined0/start:x
-UP 0
+READY 0
 EOF
 
 ###############################################################################

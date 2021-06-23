@@ -36,8 +36,12 @@ static bool is_running[SLOTS] = { 0, 0 };
 	   mined. */
 static bool powered[SLOTS] = { 0, 0 };
 	/* Slot state. Not needed when using separate mineds. */
+/* State we're trying to reach. We start at "off", then update from MQTT. */
 static bool master_goal = 0;		/* Master switch */
 static bool slot_goal[SLOTS] = { 0, 0 };/* Per-slot switches */
+/* Cached switch state in EEPROM. */
+static bool master_sw = 0;		/* Master switch */
+static bool slot_sw[SLOTS] = { 0, 0 };	/* Per-slot switches */
 
 static const char *state_name[] = {
 	[s_on]		= "ON",
@@ -90,16 +94,28 @@ static void down(const char *arg)
 
 static void up(const char *arg)
 {
+	char buf[100];
+	int ret;
+
+	if (testing) {
+		printf("LHADM %s up\n", arg);
+	} else {
+		sprintf(buf, "lhadm %s up", arg);
+		ret = system(buf);
+		if (ret)
+			fprintf(stderr, "lhadm: exit code %d\n", ret);
+	}
+}
+
+
+static void ready(const char *arg)
+{
 	if (testing) {
 		if (arg && *arg)
-			printf("UP %s\n", arg);
+			printf("READY %s\n", arg);
 		else
-			printf("UP\n");
+			printf("READY\n");
 	}
-	/*
-	 * We don't have any real "up" action, since the launch script is
-	 * expected to clean up on its own.
-	 */
 }
 
 
@@ -138,6 +154,8 @@ static void step_separate(bool slot, const char *daemon, const char *arg,
 		if (is_running[slot])
 			break;
 		if (goal) {
+			if (arg)
+				up(arg);
 			start(daemon);
 			state[slot] = s_start;
 		} else {
@@ -149,9 +167,11 @@ static void step_separate(bool slot, const char *daemon, const char *arg,
 	case s_off:
 		if (goal) {
 			if (is_running[slot]) {
-				up(arg);
+				ready(arg);
 				state[slot] = s_on;
 			} else {
+				if (arg)
+					up(arg);
 				start(daemon);
 				state[slot] = s_start;
 			}
@@ -167,7 +187,7 @@ static void step_separate(bool slot, const char *daemon, const char *arg,
 		if (!is_running[slot])
 			break;
 		if (goal) {
-			up(arg);
+			ready(arg);
 			state[slot] = s_on;
 		} else {
 			stop(daemon);
@@ -186,7 +206,9 @@ static void lhadm_adjust(bool slot, const char *s, bool want)
 {
 	if (want == powered[slot])
 		return;
-	if (!want)
+	if (want)
+		up(s);
+	else
 		down(s);
 	powered[slot] = want;
 }
@@ -268,19 +290,19 @@ void onoff_mined(bool slot, bool running)
 
 void onoff_master_switch(bool on)
 {
-	if (master_goal != on)
+	if (master_sw != on)
 		mqtt_printf(MQTT_TOPIC_CFG_MASTER, qos_ack, 0, on ? "" : "off");
-	master_goal = on;
+	master_goal = master_sw = on;
 	action();
 }
 
 
 void onoff_slot_switch(bool slot, bool on)
 {
-	if (slot_goal[slot] != on)
+	if (slot_sw[slot] != on)
 		mqtt_printf(slot ? MQTT_TOPIC_CFG_SLOT1 : MQTT_TOPIC_CFG_SLOT0,
 		    qos_ack, 0, on ? "" : "off");
-	slot_goal[slot] = on;
+	slot_goal[slot] = slot_sw[slot] = on;
 	action();
 }
 
@@ -298,7 +320,7 @@ static bool getenv_on(const char *name)
 
 void onoff_init(void)
 {
-	master_goal = getenv_on("CFG_SWITCH_LAST");
-	slot_goal[0] = getenv_on("CFG_SWITCH_0_LAST");
-	slot_goal[1] = getenv_on("CFG_SWITCH_1_LAST");
+	master_sw = getenv_on("CFG_SWITCH_LAST");
+	slot_sw[0] = getenv_on("CFG_SWITCH_0_LAST");
+	slot_sw[1] = getenv_on("CFG_SWITCH_1_LAST");
 }

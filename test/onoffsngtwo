@@ -4,7 +4,7 @@
 ###############################################################################
 
 CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
-    try "onoffsngonw: master+slot0 on" <<EOF
+    try "onoffsngtwo: master+slot0 on" <<EOF
 /power/on/master:1
 /power/on/slot0:1
 /daemon/mined/time:123
@@ -13,8 +13,9 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+LHADM 0 up
 /daemon/mined/start:x
-UP
+READY
 EOF
 
 # -----------------------------------------------------------------------------
@@ -25,6 +26,8 @@ CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
 /power/on/slot0:1
 /power/on/slot1:1
 /daemon/mined/time:123
+/daemon/mined/time:0
+/daemon/mined/time:123
 /power/on/master:0
 /daemon/mined/time:0
 EOF
@@ -32,8 +35,12 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+LHADM 0 up
 /daemon/mined/start:x
-UP
+/daemon/mined/stop:x
+LHADM 1 up
+/daemon/mined/start:x
+READY
 /config/user/SWITCH_LAST/set:off
 /daemon/mined/stop:x
 LHADM 0 down
@@ -48,6 +55,8 @@ CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
 /power/on/slot0:1
 /power/on/slot1:1
 /daemon/mined/time:123
+/daemon/mined/time:0
+/daemon/mined/time:123
 /power/on/slot0:0
 /daemon/mined/time:0
 /daemon/mined/time:123
@@ -56,13 +65,17 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+LHADM 0 up
 /daemon/mined/start:x
-UP
+/daemon/mined/stop:x
+LHADM 1 up
+/daemon/mined/start:x
+READY
 /config/user/SWITCH_0_LAST/set:off
 /daemon/mined/stop:x
 LHADM 0 down
 /daemon/mined/start:x
-UP
+READY
 EOF
 
 # -----------------------------------------------------------------------------
@@ -73,6 +86,8 @@ CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
 /power/on/slot0:1
 /power/on/slot1:1
 /daemon/mined/time:123
+/daemon/mined/time:0
+/daemon/mined/time:123
 /power/on/slot1:0
 /daemon/mined/time:0
 /daemon/mined/time:123
@@ -81,13 +96,17 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+LHADM 0 up
 /daemon/mined/start:x
-UP
+/daemon/mined/stop:x
+LHADM 1 up
+/daemon/mined/start:x
+READY
 /config/user/SWITCH_1_LAST/set:off
 /daemon/mined/stop:x
 LHADM 1 down
 /daemon/mined/start:x
-UP
+READY
 EOF
 
 # -----------------------------------------------------------------------------
@@ -98,6 +117,8 @@ CFG_SLOT0_SERIAL=xyz CFG_SLOT1_SERIAL=xyz \
 /power/on/slot0:1
 /power/on/slot1:1
 /daemon/mined/time:123
+/daemon/mined/time:0
+/daemon/mined/time:123
 /power/on/slot1:0
 /daemon/mined/time:0
 /daemon/mined/time:123
@@ -109,17 +130,22 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+LHADM 0 up
 /daemon/mined/start:x
-UP
+/daemon/mined/stop:x
+LHADM 1 up
+/daemon/mined/start:x
+READY
 /config/user/SWITCH_1_LAST/set:off
 /daemon/mined/stop:x
 LHADM 1 down
 /daemon/mined/start:x
-UP
+READY
 /config/user/SWITCH_1_LAST/set:
 /daemon/mined/stop:x
+LHADM 1 up
 /daemon/mined/start:x
-UP
+READY
 EOF
 
 ###############################################################################
