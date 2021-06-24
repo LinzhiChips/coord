@@ -13,10 +13,14 @@
 #include <stdbool.h>
 
 
+void onoff_shutdown(bool on);
+
 void onoff_mined(bool slot, bool running);
 
 void onoff_master_switch(bool on);
 void onoff_slot_switch(bool slot, bool on);
+
+void onoff_trip_master(bool set);
 
 void onoff_init(void);
 

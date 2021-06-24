@@ -19,6 +19,7 @@
 #include "mqtt.h"
 #include "led.h"
 #include "action.h"
+#include "onoff.h"
 #include "fsm.h"
 
 
@@ -203,6 +204,7 @@ static void update_cond(void)
 	default:
 		abort();
 	}
+	onoff_shutdown(abnormal_cond & (TS | PS | I2CS));
 }
 
 

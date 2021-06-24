@@ -130,6 +130,12 @@ static void process_onoff_slot1(const char *s)
 }
 
 
+static void process_trip_master(const char *s)
+{
+	onoff_trip_master(!strcmp(s, "y"));
+}
+
+
 /* ----- Callback wrappers ------------------------------------------------- */
 
 
@@ -234,6 +240,8 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_ONOFF_MASTER, process_onoff_master);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT0, process_onoff_slot0);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT1, process_onoff_slot1);
+
+	sub_string(MQTT_TOPIC_CFG_TRIP_MASTER, process_trip_master);
 
 	if (testing)
 		mqtt_testing();

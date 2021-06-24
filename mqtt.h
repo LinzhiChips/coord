@@ -52,6 +52,8 @@
 #define	MQTT_TOPIC_CFG_MASTER	"/config/user/SWITCH_LAST/set"
 #define	MQTT_TOPIC_CFG_SLOT0	"/config/user/SWITCH_0_LAST/set"
 #define	MQTT_TOPIC_CFG_SLOT1	"/config/user/SWITCH_1_LAST/set"
+#define	MQTT_TOPIC_CFG_TRIP_MASTER \
+				"/config/user/TRIP_MASTER"
 
 void mqtt_setup(void);
 void mqtt_loop(void);

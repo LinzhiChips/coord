@@ -42,6 +42,8 @@ static bool slot_goal[SLOTS] = { 0, 0 };/* Per-slot switches */
 /* Cached switch state in EEPROM. */
 static bool master_sw = 0;		/* Master switch */
 static bool slot_sw[SLOTS] = { 0, 0 };	/* Per-slot switches */
+static bool in_shutdown = 0;
+static bool trip_master = 0;
 
 static const char *state_name[] = {
 	[s_on]		= "ON",
@@ -216,8 +218,10 @@ static void lhadm_adjust(bool slot, const char *s, bool want)
 
 static void step_single(void)
 {
-	bool want_slot0 = have_slot(0) && master_goal && slot_goal[0];
-	bool want_slot1 = have_slot(1) && master_goal && slot_goal[1];
+	bool want_slot0 =
+	    have_slot(0) && master_goal && slot_goal[0] && !in_shutdown;
+	bool want_slot1 =
+	    have_slot(1) && master_goal && slot_goal[1] && !in_shutdown;
 
 	/* before we can change the power settings, we need to shut down
 	   mined */
@@ -268,13 +272,25 @@ static void action(void)
 	if (separate_mined) {
 		if (have_slot(0))
 			step_separate(0, "mined0", "0",
-			    master_goal && slot_goal[0]);
+			    master_goal && slot_goal[0] && !in_shutdown);
 		if (have_slot(1))
 			step_separate(1, "mined1", "1",
-			    master_goal && slot_goal[1]);
+			    master_goal && slot_goal[1] && !in_shutdown);
 	} else {
 		step_single();
 	}
+}
+
+
+/* ----- Input from FSM ---------------------------------------------------- */
+
+
+void onoff_shutdown(bool on)
+{
+	in_shutdown = on;
+	if (in_shutdown && master_goal && trip_master)
+		mqtt_printf(MQTT_TOPIC_ONOFF_MASTER, qos_ack, 1, "0");
+	action();
 }
 
 
@@ -304,6 +320,12 @@ void onoff_slot_switch(bool slot, bool on)
 		    qos_ack, 0, on ? "" : "off");
 	slot_goal[slot] = slot_sw[slot] = on;
 	action();
+}
+
+
+void onoff_trip_master(bool set)
+{
+	trip_master = set;
 }
 
 
