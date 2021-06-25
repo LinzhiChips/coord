@@ -1,0 +1,50 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "warn: I2C warning, then clear" <<EOF
+/sys/i2c/warning:456 3
+/sys/clear-shutdown:x
+/sys/i2c/warning:0 0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+RUN i2c-troubled clear
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "warn: card warning, then clear" <<EOF
+/card/warning:768
+/sys/clear-shutdown:x
+/card/warning:0
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+RUN card-troubled clear
+/sys/led/rgb:RG 0 0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "warn: boot problem, then clear" <<EOF
+/sys/boot/problem:something
+/sys/clear-shutdown:x
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/led/rgb:RG 100 100
+/sys/led/rgb:RG 0 0
+EOF
+
+###############################################################################

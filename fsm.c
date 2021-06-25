@@ -299,7 +299,7 @@ void ev_clear(void)
 		run("tshut clear");
 	if (abnormal_cond & PS)
 		run("pshut clear");
-	if (abnormal_cond & I2CS)
+	if (abnormal_cond & (I2CS | I2CW))
 		run("i2c-troubled clear");
 	if (abnormal_cond & CARD)
 		run("card-troubled clear");
