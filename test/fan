@@ -66,4 +66,31 @@ expect <<EOF
 /fan/all/pwm-set:40
 EOF
 
+# -----------------------------------------------------------------------------
+
+try "fan: 49:0 50:30 90:100, temperature set to 70.5 C" <<EOF
+/temp/0/current:70.5
+/fan/profile:49:0 50:30 90:100
+EOF
+
+expect <<EOF
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:65
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: 50:0 50:30 90:100, temperature set to 70.5 C (entry ignored)" <<EOF
+/temp/0/current:70.5
+/fan/profile:50:0 50:30 90:100
+EOF
+
+expect <<EOF
+bad temp:duty entry at "50:30 90:100"
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:50
+EOF
+
 ###############################################################################
