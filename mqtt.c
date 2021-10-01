@@ -25,13 +25,18 @@
 /* --- Inbound ------------------------------------------------------------- */
 
 
-static void process_pool_stats(const char *msg)
+static void process_pool_stats(const char *msg, int slot)
 {
-	static unsigned last_j = UINT_MAX;
-	static unsigned last_a = 0;
+	static unsigned last_j[2] = { UINT_MAX, UINT_MAX };
+	static unsigned last_a[2] = { 0, 0 };
 	unsigned long long c;
 	unsigned j, a, r, s;
 
+	if (slot == -1) {
+		slot = 0;
+		last_j[1] = UINT_MAX;
+		last_a[1] = 0;
+	}
 	if (sscanf(msg, "C:%llu J:%u A:%u R:%u S:%u", &c, &j, &a, &r, &s)
 	    != 5) {
 		fprintf(stderr, "bad statistics: \"%s\"\n", msg);
@@ -40,16 +45,34 @@ static void process_pool_stats(const char *msg)
 	/*
 	 * @@@ mined doesn't reset J on disconnect yet
 	 */
-	if (j < last_j) {
+	if (j < last_j[slot]) {
 		ev_disconnect();
 	} else {
-		if (j > last_j)
+		if (j > last_j[slot])
 			ev_got_job();
-		if (a > last_a)
+		if (a > last_a[slot])
 			ev_got_ack();
 	}
-	last_j = j;
-	last_a = a;
+	last_j[slot] = j;
+	last_a[slot] = a;
+}
+
+
+static void process_pool_stats_common(const char *msg)
+{
+	process_pool_stats(msg, -1);
+}
+
+
+static void process_pool_stats_0(const char *msg)
+{
+	process_pool_stats(msg, 0);
+}
+
+
+static void process_pool_stats_1(const char *msg)
+{
+	process_pool_stats(msg, 1);
 }
 
 
@@ -224,7 +247,9 @@ void mqtt_setup(void)
 	sub_bool(MQTT_TOPIC_USER, ev_user);
 	sub_bool(MQTT_TOPIC_RECOVERY, ev_recovery);
 	sub_string(MQTT_TOPIC_BOOT_PROBLEM, ev_boot_problem);
-	sub_string(MQTT_TOPIC_POOL_STATS, process_pool_stats);
+	sub_string(MQTT_TOPIC_POOL_STATS, process_pool_stats_common);
+	sub_string(MQTT_TOPIC_POOL_SLOT0_STATS, process_pool_stats_0);
+	sub_string(MQTT_TOPIC_POOL_SLOT1_STATS, process_pool_stats_1);
 	sub_string(MQTT_TOPIC_MINED_STATE, process_mined_state);
 	sub_n(MQTT_TOPIC_DARK_MODE, dark_mode_set);
 
