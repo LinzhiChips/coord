@@ -1,7 +1,7 @@
 /*
  * coord.h - Coordination and monitoring
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -18,7 +18,7 @@
 #define	USER_LONG_S	2.0	/* long press */
 
 #define	SLOTS		2
-#define	CHIPS		32
+#define	MAX_CHIPS	32
 
 
 extern bool verbose;

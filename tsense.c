@@ -8,7 +8,9 @@
  */
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/time.h>
 
 #include "linzhi/dtime.h"
@@ -23,15 +25,21 @@
 #define	TCHAN_LIMIT_S	20	/* report all channels idle this long */
 #define	TCHAN_TRIGGER_S	30	/* threshold to trigger a report */
 
-#define	CHIP2DIE_A(c)	((c) << 1)
-#define	CHIP2DIE_B(c)	(((c) << 1) ^ 3)
-#define	DIE2CHIP(d)	(((d) & ~2) >> 1 | ((((d) >> 1) ^ (d)) & 1))
+
+struct tsense_ops {
+	unsigned (*chip2die_a)(unsigned chip);
+	unsigned (*chip2die_b)(unsigned chip);
+	unsigned (*die2chip)(unsigned die);
+	unsigned (*pos2die)(unsigned pos);
+};
 
 
 bool tsense_unreliable = 0;
 
-static struct timespec last[SLOTS][CHIPS];
-static bool overdue[SLOTS][CHIPS];
+static struct timespec last[SLOTS][MAX_CHIPS];
+static bool overdue[SLOTS][MAX_CHIPS];
+static unsigned chips[SLOTS];
+static struct tsense_ops *ops[SLOTS];
 
 
 /* ----- Helper functions -------------------------------------------------- */
@@ -50,7 +58,28 @@ static double delta(const struct timespec *t0, const struct timespec *t)
 }
 
 
-static unsigned pos2die(unsigned pos)
+/* ----- Board-specific mappings: LH --------------------------------------- */
+
+
+static unsigned lh_chip2die_a(unsigned chip)
+{
+	return chip << 1;
+}
+
+
+static unsigned lh_chip2die_b(unsigned chip)
+{
+	return (chip << 1) ^ 3;
+}
+
+
+static unsigned lh_die2chip(unsigned die)
+{
+	return (die & ~2) >> 1 | (((die >> 1) ^ die) & 1);
+}
+
+
+static unsigned lh_pos2die(unsigned pos)
 {
 	static const unsigned map[2][8] = {
 	    { 13, 15,  9, 11,  5,  7,  1,  3 },
@@ -61,23 +90,66 @@ static unsigned pos2die(unsigned pos)
 }
 
 
+static struct tsense_ops lh_ops = {
+	.chip2die_a	= lh_chip2die_a,
+	.chip2die_b	= lh_chip2die_b,
+	.die2chip	= lh_die2chip,
+	.pos2die	= lh_pos2die,
+};
+
+
+/* ----- Board-specific mappings: LB --------------------------------------- */
+
+
+static unsigned lb_chip2die_a(unsigned chip)
+{
+	return 0;
+}
+
+
+static unsigned lb_chip2die_b(unsigned chip)
+{
+	return 1;
+}
+
+
+static unsigned lb_die2chip(unsigned die)
+{
+	return 0;
+}
+
+
+static unsigned lb_pos2die(unsigned pos)
+{
+	return pos;
+}
+
+
+static struct tsense_ops lb_ops = {
+	.chip2die_a	= lb_chip2die_a,
+	.chip2die_b	= lb_chip2die_b,
+	.die2chip	= lb_die2chip,
+	.pos2die	= lb_pos2die,
+};
+
+
 /* ----- Monitor temperature sensing --------------------------------------- */
 
 
 static void tsense_warn(bool slot, const struct timespec *t)
 {
 	static bool warning[SLOTS] = { 0, };
-	char buf[CHIPS * (2 * 3 + 30) + 1];	/* 30 is for the delta time */
+	char buf[MAX_CHIPS * (2 * 3 + 30) + 1];	/* 30 is for the delta time */
 	char *p = buf;
 	unsigned chip;
 
-	for (chip = 0; chip != CHIPS; chip++) {
+	for (chip = 0; chip != chips[slot]; chip++) {
 		if (!overdue[slot][chip])
 			continue;
 		if (p != buf)
 			*p++ = ' ';
 		p += sprintf(p, "%d,%d,%d",
-		    CHIP2DIE_A(chip), CHIP2DIE_B(chip),
+		    ops[slot]->chip2die_a(chip), ops[slot]->chip2die_b(chip),
 		    (int) delta(last[slot] + chip, t));
 	}
 	*p = 0;
@@ -103,8 +175,8 @@ static void tsense_warn(bool slot, const struct timespec *t)
 
 void tsense_update(bool slot, const struct timespec *t, unsigned pos)
 {
-	unsigned die = pos2die(pos);
-	unsigned chip = DIE2CHIP(die);
+	unsigned die = ops[slot]->pos2die(pos);
+	unsigned chip = ops[slot]->die2chip(die);
 
 	last[slot][chip] = *t;
 	if (overdue[slot][chip]) {
@@ -130,14 +202,14 @@ void tsense_tick(void)
 
 		if (!((slots >> slot) & 1))
 			continue;
-		for (chip = 0; chip != CHIPS; chip++) {
+		for (chip = 0; chip != chips[slot]; chip++) {
 			dt = delta(last[slot] + chip, &t);
 			if (dt >= TCHAN_TRIGGER_S)
 				break;
 		}
 		if (dt < TCHAN_TRIGGER_S)
 			return;
-		for (chip = 0; chip != CHIPS; chip++) {
+		for (chip = 0; chip != chips[slot]; chip++) {
 			dt = delta(last[slot] + chip, &t);
 			if (dt > TCHAN_LIMIT_S) {
 				if (!overdue[slot][chip])
@@ -161,7 +233,20 @@ void tsense_init(void)
 	else
 		dtime_get(&t);
 	for (slot = 0; slot != SLOTS; slot++) {
-		for (chip = 0; chip != CHIPS; chip++) {
+		char var[] = "CFG_SLOTn_SERIAL";
+		char *sn;
+
+		var[8] = slot + '0';
+		sn = getenv(var);
+		if (sn && !strncmp(sn, "BC", 2)) {
+			ops[slot] = &lb_ops;
+			chips[slot] = 1;
+		} else {
+			ops[slot] = &lh_ops;
+			chips[slot] = 32;
+		}
+
+		for (chip = 0; chip != chips[slot]; chip++) {
 			last[slot][chip] = t;
 			overdue[slot][chip] = 0;
 		}
@@ -185,14 +270,14 @@ void tsense_test(void)
 	int i;
 
 	printf("--- pos -> die ---\n");
-	for (i = 0; i != 2 * CHIPS; i++)
-		printf("%d: %u\n", i, pos2die(i));
+	for (i = 0; i != 2 * MAX_CHIPS; i++)
+		printf("%d: %u\n", i, lh_ops.pos2die(i));
 	printf("--- chip -> dies ---\n");
-	for (i = 0; i != CHIPS; i++) {
-		int a = CHIP2DIE_A(i);
-		int b = CHIP2DIE_B(i);
+	for (i = 0; i != MAX_CHIPS; i++) {
+		int a = lh_ops.chip2die_a(i);
+		int b = lh_ops.chip2die_b(i);
 
 		printf("%d: %d,%d, %d.%d\n",
-		    i, a, b, DIE2CHIP(a), DIE2CHIP(b));
+		    i, a, b, lh_ops.die2chip(a), lh_ops.die2chip(b));
 	}
 }

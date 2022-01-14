@@ -340,9 +340,19 @@ static bool getenv_on(const char *name)
 }
 
 
+static bool getenv_lh(const char *name)
+{
+	const char *s = getenv(name);
+
+	return s && *s == 'H';
+}
+
+
 void onoff_init(void)
 {
 	master_sw = getenv_on("CFG_SWITCH_LAST");
-	slot_sw[0] = getenv_on("CFG_SWITCH_0_LAST");
-	slot_sw[1] = getenv_on("CFG_SWITCH_1_LAST");
+	slot_sw[0] = getenv_on("CFG_SWITCH_0_LAST") &&
+	    getenv_lh("CFG_SERIAL_0");
+	slot_sw[1] = getenv_on("CFG_SWITCH_1_LAST") &&
+	    getenv_lh("CFG_SERIAL_1");
 }
