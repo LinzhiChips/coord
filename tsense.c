@@ -34,6 +34,9 @@ static struct timespec last[SLOTS][CHIPS];
 static bool overdue[SLOTS][CHIPS];
 
 
+/* ----- Helper functions -------------------------------------------------- */
+
+
 static double time_s(const struct timespec *t)
 {
 	return t->tv_sec + t->tv_nsec * 1e-9;
@@ -56,6 +59,9 @@ static unsigned pos2die(unsigned pos)
 
 	return map[pos >> 5][pos & 7] + 16 * (3 - ((pos >> 3) & 3));
 }
+
+
+/* ----- Monitor temperature sensing --------------------------------------- */
 
 
 static void tsense_warn(bool slot, const struct timespec *t)
