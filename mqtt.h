@@ -1,7 +1,7 @@
 /*
  * mqtt.h - MQTT setup and input processing
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -51,7 +51,11 @@
 #define	MQTT_TOPIC_ONOFF_SLOT0		"/power/on/slot0"
 #define	MQTT_TOPIC_ONOFF_SLOT1		"/power/on/slot1"
 
+#define	MQTT_TOPIC_ONOFF_OPS		"/power/on/ops"
+#define	MQTT_TOPIC_ONOFF_OPS_SET	"/power/on/ops-set"
+
 #define	MQTT_TOPIC_CFG_MASTER		"/config/user/SWITCH_LAST/set"
+#define	MQTT_TOPIC_CFG_SWITCH_OPS	"/config/user/SWITCH_OPS"
 #define	MQTT_TOPIC_CFG_SLOT0		"/config/user/SWITCH_0_LAST/set"
 #define	MQTT_TOPIC_CFG_SLOT1		"/config/user/SWITCH_1_LAST/set"
 #define	MQTT_TOPIC_CFG_TRIP_MASTER	"/config/user/TRIP_MASTER"

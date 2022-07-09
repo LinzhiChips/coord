@@ -1,7 +1,7 @@
 /*
  * mqtt.c - MQTT setup and input processing
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -159,6 +159,33 @@ static void process_trip_master(const char *s)
 }
 
 
+static void process_onoff_ops_set(const char *s)
+{
+	uint32_t value, mask = 0xffffffff;
+	char *end;
+
+	value = strtoul(s, &end, 0);
+	if (*end) {
+		if (*end != ' ')
+			goto invalid;
+		mask = strtoul(end + 1, &end, 0);
+		if (*end)
+			goto invalid;
+	}
+	onoff_ops(value, mask);
+	return;
+
+invalid:
+	fprintf(stderr, "don't understand \"%s\"\n", s);
+}
+
+
+static void process_switch_ops_set(const char *s)
+{
+	onoff_enable_ops(!!strcmp(s, "n"));
+}
+
+
 /* ----- Callback wrappers ------------------------------------------------- */
 
 
@@ -265,6 +292,9 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_ONOFF_MASTER, process_onoff_master);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT0, process_onoff_slot0);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT1, process_onoff_slot1);
+
+	sub_string(MQTT_TOPIC_ONOFF_OPS_SET, process_onoff_ops_set);
+	sub_string(MQTT_TOPIC_CFG_SWITCH_OPS, process_switch_ops_set);
 
 	sub_string(MQTT_TOPIC_CFG_TRIP_MASTER, process_trip_master);
 

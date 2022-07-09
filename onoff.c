@@ -1,7 +1,7 @@
 /*
  * onoff.c - On/off control
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -9,6 +9,7 @@
 
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +42,10 @@ static bool master_goal = 0;		/* Master switch */
 static bool slot_goal[SLOTS] = { 0, 0 };/* Per-slot switches */
 /* Cached switch state in EEPROM. */
 static bool master_sw = 0;		/* Master switch */
+static uint32_t ops_value = 0;		/* User switch */
+static uint32_t ops_present = 0;
 static bool slot_sw[SLOTS] = { 0, 0 };	/* Per-slot switches */
+static bool ops_enabled = 1;
 static bool in_shutdown = 0;
 static bool trip_master = 0;
 
@@ -59,6 +63,20 @@ static const char *state_name[] = {
 static bool have_slot(bool slot)
 {
 	return (slots >> slot) & 1;
+}
+
+
+static bool ops_sw(void)
+{
+	uint32_t d = (ops_value ^ ops_present) & ops_present;
+	unsigned i;
+
+	if (!ops_present)
+		return 1;
+	for (i = 0; i != 4; i++)
+		if (((ops_present >> i * 8) & 0xff) && !((d >> i * 8) & 0xff))
+			return 1;
+	return 0;
 }
 
 
@@ -304,12 +322,19 @@ void onoff_mined(bool slot, bool running)
 }
 
 
+static void master_action(void)
+{
+	master_goal = master_sw && (ops_sw() || !ops_enabled);
+	action();
+}
+
+
 void onoff_master_switch(bool on)
 {
 	if (master_sw != on)
 		mqtt_printf(MQTT_TOPIC_CFG_MASTER, qos_ack, 0, on ? "" : "off");
-	master_goal = master_sw = on;
-	action();
+	master_sw = on;
+	master_action();
 }
 
 
@@ -320,6 +345,25 @@ void onoff_slot_switch(bool slot, bool on)
 		    qos_ack, 0, on ? "" : "off");
 	slot_goal[slot] = slot_sw[slot] = on;
 	action();
+}
+
+
+void onoff_ops(uint32_t value, uint32_t mask)
+{
+	ops_value = (ops_value & ~mask) | (value & mask);
+	ops_present |= mask;
+	mqtt_printf(MQTT_TOPIC_ONOFF_OPS, qos_ack, 1, "0x%x 0x%x %u",
+	    ops_value, ops_present, ops_enabled);
+	master_action();
+}
+
+
+void onoff_enable_ops(bool set)
+{
+	ops_enabled = set;
+	mqtt_printf(MQTT_TOPIC_ONOFF_OPS, qos_ack, 1, "0x%x 0x%x %u",
+	    ops_value, ops_present, ops_enabled);
+	master_action();
 }
 
 
