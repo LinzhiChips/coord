@@ -37,6 +37,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 /config/user/SWITCH_LAST/set:
 LHADM 0 up
 /daemon/mined0/start:x

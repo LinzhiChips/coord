@@ -13,6 +13,7 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 LHADM 0 up
 /daemon/mined/start:x
 READY
@@ -35,8 +36,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 LHADM 0 up
 /daemon/mined/start:x
+/config/user/SWITCH_1_LAST/set:
 /daemon/mined/stop:x
 LHADM 1 up
 /daemon/mined/start:x
@@ -65,8 +68,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 LHADM 0 up
 /daemon/mined/start:x
+/config/user/SWITCH_1_LAST/set:
 /daemon/mined/stop:x
 LHADM 1 up
 /daemon/mined/start:x
@@ -96,8 +101,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 LHADM 0 up
 /daemon/mined/start:x
+/config/user/SWITCH_1_LAST/set:
 /daemon/mined/stop:x
 LHADM 1 up
 /daemon/mined/start:x
@@ -130,8 +137,10 @@ EOF
 expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/config/user/SWITCH_0_LAST/set:
 LHADM 0 up
 /daemon/mined/start:x
+/config/user/SWITCH_1_LAST/set:
 /daemon/mined/stop:x
 LHADM 1 up
 /daemon/mined/start:x
