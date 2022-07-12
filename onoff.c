@@ -359,6 +359,8 @@ void onoff_ops(uint32_t value, uint32_t mask)
 {
 	ops_value = (ops_value & ~mask) | (value & mask);
 	ops_present |= mask;
+	if (testing)
+		printf("op sw %u\n", ops_sw());
 	ops_update();
 	master_action();
 }

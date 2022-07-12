@@ -1,0 +1,80 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+ 
+try "opssw: default is on" <<EOF
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+ 
+# -----------------------------------------------------------------------------
+
+try "opssw: set channel 0 to on" <<EOF
+/power/on/ops-set: 1 1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+op sw 1
+/power/on/ops:0x1 0x1 1
+EOF
+ 
+# -----------------------------------------------------------------------------
+
+try "opssw: set channel 0 to off" <<EOF
+/power/on/ops-set: 0 1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+op sw 0
+/power/on/ops:0x0 0x1 1
+EOF
+ 
+# -----------------------------------------------------------------------------
+
+try "opssw: set channel 0 to off, then channel 8 to on" <<EOF
+/power/on/ops-set: 0 1
+/power/on/ops-set: 0x100 0x100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+op sw 0
+/power/on/ops:0x0 0x1 1
+op sw 1
+/power/on/ops:0x100 0x101 1
+EOF
+ 
+# -----------------------------------------------------------------------------
+
+try "opssw: set ch 0 to off, ch 1 to on, than ch 0 to on" <<EOF
+/power/on/ops-set: 0 1
+/power/on/ops-set: 2 2
+/power/on/ops-set: 1 1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+op sw 0
+/power/on/ops:0x0 0x1 1
+op sw 0
+/power/on/ops:0x2 0x3 1
+op sw 1
+/power/on/ops:0x3 0x3 1
+EOF
+ 
+###############################################################################
