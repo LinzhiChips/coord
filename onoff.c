@@ -348,12 +348,18 @@ void onoff_slot_switch(bool slot, bool on)
 }
 
 
+static void ops_update(void)
+{
+	mqtt_printf(MQTT_TOPIC_ONOFF_OPS, qos_ack, 1, "0x%x 0x%x %u",
+	    ops_value, ops_present, ops_enabled);
+}
+
+
 void onoff_ops(uint32_t value, uint32_t mask)
 {
 	ops_value = (ops_value & ~mask) | (value & mask);
 	ops_present |= mask;
-	mqtt_printf(MQTT_TOPIC_ONOFF_OPS, qos_ack, 1, "0x%x 0x%x %u",
-	    ops_value, ops_present, ops_enabled);
+	ops_update();
 	master_action();
 }
 
@@ -361,8 +367,7 @@ void onoff_ops(uint32_t value, uint32_t mask)
 void onoff_enable_ops(bool set)
 {
 	ops_enabled = set;
-	mqtt_printf(MQTT_TOPIC_ONOFF_OPS, qos_ack, 1, "0x%x 0x%x %u",
-	    ops_value, ops_present, ops_enabled);
+	ops_update();
 	master_action();
 }
 
@@ -399,4 +404,10 @@ void onoff_init(void)
 	    getenv_lh("CFG_SERIAL_0");
 	slot_sw[1] = getenv_on("CFG_SWITCH_1_LAST") &&
 	    getenv_lh("CFG_SERIAL_1");
+}
+
+
+void onoff_init_late(void)
+{
+	ops_update();
 }

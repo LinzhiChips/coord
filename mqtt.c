@@ -165,13 +165,11 @@ static void process_onoff_ops_set(const char *s)
 	char *end;
 
 	value = strtoul(s, &end, 0);
-	if (*end) {
-		if (*end != ' ')
-			goto invalid;
-		mask = strtoul(end + 1, &end, 0);
-		if (*end)
-			goto invalid;
-	}
+	if (*end != ' ')
+		goto invalid;
+	mask = strtoul(end + 1, &end, 0);
+	if (*end)
+		goto invalid;
 	onoff_ops(value, mask);
 	return;
 

@@ -8,6 +8,7 @@ try "fan: 0:100" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
@@ -24,6 +25,7 @@ try "fan: 20:50 70:100" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
@@ -44,6 +46,7 @@ try "fan: 49:0 50:20 80:100" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
@@ -61,6 +64,7 @@ try "fan: 20:20 80:100, temperature set to 35 C" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:40
@@ -74,6 +78,7 @@ try "fan: 49:0 50:30 90:100, temperature set to 70.5 C" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:65
@@ -88,6 +93,7 @@ EOF
 
 expect <<EOF
 bad temp:duty entry at "50:30 90:100"
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:50

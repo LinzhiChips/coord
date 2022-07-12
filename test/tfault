@@ -9,6 +9,7 @@ CFG_SLOT0_SERIAL=x try "fault: total tsense fault causes max fan speed" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
@@ -32,6 +33,7 @@ CFG_SLOT0_SERIAL=x try "fault: tsense stopping causes max fan speed" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:20
@@ -60,6 +62,7 @@ CFG_SLOT0_SERIAL=x try "fault: tsense recovery resumes old fan speed" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:30

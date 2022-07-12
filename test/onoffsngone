@@ -11,6 +11,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -31,6 +32,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -54,6 +56,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -78,6 +81,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -102,6 +106,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -123,6 +128,7 @@ CFG_SLOT0_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:
@@ -146,6 +152,7 @@ CFG_SLOT1_SERIAL=xyz \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_1_LAST/set:

@@ -14,6 +14,7 @@ CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
 EOF
  
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_LAST/set:
@@ -35,6 +36,7 @@ CFG_SEPARATE_MINED=y CFG_SLOT0_SERIAL=xyz \
 EOF
  
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /config/user/SWITCH_0_LAST/set:

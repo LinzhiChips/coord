@@ -9,6 +9,7 @@ try "blue: highlight on and off" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:B 1450 50
@@ -22,6 +23,7 @@ try "blue: enter recovery mode" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:B 0 0
@@ -35,6 +37,7 @@ try "blue: brief USER press" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0

@@ -10,6 +10,7 @@ try "warn: I2C warning, then clear" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -26,6 +27,7 @@ try "warn: card warning, then clear" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -41,6 +43,7 @@ try "warn: boot problem, then clear" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100

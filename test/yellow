@@ -9,6 +9,7 @@ try "yellow: thermal warning on and off" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -23,6 +24,7 @@ try "yellow: I2C warning on and off" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -37,6 +39,7 @@ try "yellow: card warning on and off" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -51,6 +54,7 @@ try "yellow: boot problem on and off" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100

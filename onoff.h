@@ -27,5 +27,6 @@ void onoff_enable_ops(bool set);
 void onoff_trip_master(bool set);
 
 void onoff_init(void);
+void onoff_init_late(void); /* after MQTT is operational */
 
 #endif /* !COORD_ONOFF_H */

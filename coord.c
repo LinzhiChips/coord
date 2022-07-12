@@ -199,6 +199,7 @@ int main(int argc, char **argv)
 	onoff_init();
 	fan_init();
 	mqtt_setup();
+	onoff_init_late();
 	fsm_init();
 	tsense_init();
 	if (testing)

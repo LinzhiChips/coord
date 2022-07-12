@@ -10,6 +10,7 @@ CFG_SLOT0_SERIAL=x try "tsense: no failure" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 EOF
@@ -23,6 +24,7 @@ CFG_SLOT0_SERIAL=x try "tsense: single channel failure" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 EOF
@@ -36,6 +38,7 @@ CFG_SLOT0_SERIAL=x try "tsense: dual channel failure, different chips" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 EOF
@@ -49,6 +52,7 @@ CFG_SLOT0_SERIAL=x try "tsense: dual channel failure, same chip" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -64,6 +68,7 @@ CFG_SLOT0_SERIAL=x try "tsense: four channel failure, two chips" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -81,6 +86,7 @@ CFG_SLOT0_SERIAL=x try "tsense: idem, in steps" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -98,6 +104,7 @@ CFG_SLOT1_SERIAL=y try "tsense: in steps, on slot 1" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -116,6 +123,7 @@ CFG_SLOT1_SERIAL=y try "tsense: four channels fail, one recovers" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -133,6 +141,7 @@ CFG_SLOT1_SERIAL=y try "tsense: four channels fail, all recover" <<EOF
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -153,6 +162,7 @@ CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -172,6 +182,7 @@ CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -192,6 +203,7 @@ CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100
@@ -213,6 +225,7 @@ CFG_SLOT0_SERIAL=x CFG_SLOT1_SERIAL=y \
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 100 100

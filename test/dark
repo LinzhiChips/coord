@@ -9,6 +9,7 @@ $GREEN
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
@@ -27,6 +28,7 @@ $GREEN
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
@@ -48,6 +50,7 @@ $GREEN
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
@@ -69,6 +72,7 @@ $GREEN
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
@@ -94,6 +98,7 @@ $GREEN
 EOF
 
 expect <<EOF
+/power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
