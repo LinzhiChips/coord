@@ -1,7 +1,7 @@
 /*
  * fsm.c - Layered state machines to determine system condition
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -139,11 +139,12 @@ enum abnormal_cond {
 	CARD	= 1 << 5,	/* card (uSD) warning */
 	BOOT	= 1 << 6,	/* boot problem warning */
 	TSENSE	= 1 << 7,	/* temperature sensing fault */
+	LINK	= 1 << 8,	/* Ethernet link down */
 };
 
 
 #define	SHUTDOWN	(TS | PS | I2CS)
-#define	WARNING		(TW | CARD | I2CW | BOOT | TSENSE)
+#define	WARNING		(TW | CARD | I2CW | BOOT | TSENSE | LINK)
 
 
 static enum abnormal_state abnormal_state = as_normal;
@@ -268,6 +269,16 @@ void ev_card_warn(bool on)
 		abnormal_cond |= CARD;
 	else
 		abnormal_cond &= ~CARD;
+	update_cond();
+}
+
+
+void ev_ether(bool up)
+{
+	if (up)
+		abnormal_cond &= ~LINK;
+	else
+		abnormal_cond |= LINK;
 	update_cond();
 }
 

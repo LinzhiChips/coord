@@ -16,6 +16,7 @@
 
 #include "coord.h"
 #include "mqtt.h"
+#include "fsm.h"
 #include "ether.h"
 
 
@@ -56,6 +57,7 @@ void ether_up(bool up)
 	time_t t;
 
 	ether_is_up = up;
+	ev_ether(up);
 	if (!up)
 		return;
 	t = ether_update();

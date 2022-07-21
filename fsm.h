@@ -1,7 +1,7 @@
 /*
  * fsm.h - Layered state machines to determine system condition
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -28,6 +28,7 @@ void ev_pshut(bool on);
 void ev_i2cwarn(bool on);
 void ev_i2cshut(bool on);
 void ev_card_warn(bool on);
+void ev_ether(bool up);
 void ev_boot_problem(const char *s);
 void ev_tsense(bool on);
 void ev_clear(void);
