@@ -142,6 +142,10 @@ enum abnormal_cond {
 };
 
 
+#define	SHUTDOWN	(TS | PS | I2CS)
+#define	WARNING		(TW | CARD | I2CW | BOOT | TSENSE)
+
+
 static enum abnormal_state abnormal_state = as_normal;
 static enum abnormal_cond abnormal_cond = 0;
 
@@ -171,10 +175,10 @@ static void update_cond(void)
 {
 	switch (abnormal_state) {
 	case as_normal:
-		if (abnormal_cond & (TS | PS | I2CS)) {
+		if (abnormal_cond & SHUTDOWN) {
 			abnormal_state = as_shutdown;
 			update_led();
-		} else if (abnormal_cond & (TW | CARD | I2CW | BOOT | TSENSE)) {
+		} else if (abnormal_cond & WARNING) {
 			abnormal_state = as_warn;
 			update_led();
 		}
@@ -185,7 +189,7 @@ static void update_cond(void)
 			abnormal_state = as_normal;
 			update_led();
 		}
-		if (abnormal_cond & (TS | PS | I2CS)) {
+		if (abnormal_cond & SHUTDOWN) {
 			abnormal_state = as_shutdown;
 			update_led();
 		}
@@ -195,8 +199,8 @@ static void update_cond(void)
 			abnormal_state = as_normal;
 			update_led();
 		}
-		if ((abnormal_cond & (TW | CARD | I2CW | BOOT | TSENSE)) &&
-		    !(abnormal_cond & ~(TW | CARD | I2CW | BOOT | TSENSE))) {
+		if ((abnormal_cond & WARNING) &&
+		    !(abnormal_cond & ~WARNING)) {
 			abnormal_state = as_warn;
 			update_led();
 		}
@@ -204,7 +208,7 @@ static void update_cond(void)
 	default:
 		abort();
 	}
-	onoff_shutdown(abnormal_cond & (TS | PS | I2CS));
+	onoff_shutdown(abnormal_cond & SHUTDOWN);
 }
 
 
