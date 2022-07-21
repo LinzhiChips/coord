@@ -14,6 +14,7 @@ expect <<EOF
 /sys/led/ether:1
 /sys/led/rgb:RG 0 0
 /sys/led/rgb:G 0 0
+/sys/ether/bounce:0
 EOF
 
 # -----------------------------------------------------------------------------
@@ -35,6 +36,7 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/rgb:G 0 0
 before
+/sys/ether/bounce:0
 after
 /sys/led/rgb:- 0 0
 /sys/led/ether:0
@@ -58,6 +60,7 @@ expect <<EOF
 /sys/led/rgb:G 0 0
 /sys/led/rgb:- 0 0
 /sys/led/ether:0
+/sys/ether/bounce:0
 /sys/led/rgb:G 0 0
 /sys/led/ether:1
 EOF
@@ -80,6 +83,7 @@ expect <<EOF
 /sys/led/rgb:G 0 0
 /sys/led/rgb:- 0 0
 /sys/led/ether:0
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /sys/led/ether:1
 EOF
@@ -106,6 +110,7 @@ expect <<EOF
 /sys/led/rgb:G 0 0
 /sys/led/rgb:- 0 0
 /sys/led/ether:0
+/sys/ether/bounce:0
 /sys/led/rgb:G 0 0
 /sys/led/ether:1
 /sys/clear-shutdown:x

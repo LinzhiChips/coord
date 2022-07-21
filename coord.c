@@ -25,6 +25,7 @@
 #include "tsense.h"
 #include "fan.h"
 #include "onoff.h"
+#include "ether.h"
 #include "mqtt.h"
 #include "coord.h"
 
@@ -114,6 +115,7 @@ void polled_actions(void)
 	dark_mode_idle();
 	ev_tick();
 	tsense_tick();
+	ether_tick();
 }
 
 

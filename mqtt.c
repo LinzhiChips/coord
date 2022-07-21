@@ -19,6 +19,7 @@
 #include "fsm.h"
 #include "fan.h"
 #include "onoff.h"
+#include "ether.h"
 #include "mqtt.h"
 
 
@@ -262,6 +263,7 @@ static void sub_string(const char *topic, void (*fn)(const char *))
 void mqtt_setup(void)
 {
 	sub_void(MQTT_TOPIC_CLEAR, ev_clear);
+
 	sub_bool(MQTT_TOPIC_HIGHLIGHT, ev_highlight);
 	sub_bool(MQTT_TOPIC_PSHUT, ev_pshut);
 	sub_bool(MQTT_TOPIC_I2CSHUT, ev_i2cshut);
@@ -271,6 +273,8 @@ void mqtt_setup(void)
 	sub_bool(MQTT_TOPIC_CARD_WARN, ev_card_warn);
 	sub_bool(MQTT_TOPIC_USER, ev_user);
 	sub_bool(MQTT_TOPIC_RECOVERY, ev_recovery);
+	sub_bool(MQTT_TOPIC_ETHER_UP, ether_up);
+
 	sub_string(MQTT_TOPIC_BOOT_PROBLEM, ev_boot_problem);
 	sub_string(MQTT_TOPIC_POOL_STATS, process_pool_stats_common);
 	sub_string(MQTT_TOPIC_POOL_SLOT0_STATS, process_pool_stats_0);

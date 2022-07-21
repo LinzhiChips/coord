@@ -32,6 +32,9 @@
 #define	MQTT_TOPIC_LED_RGB		"/sys/led/rgb"
 #define	MQTT_TOPIC_LED_ETHER		"/sys/led/ether"
 
+#define	MQTT_TOPIC_ETHER_UP		"/sys/ether/up"
+#define	MQTT_TOPIC_ETHER_BOUNCE		"/sys/ether/bounce"
+
 #define	MQTT_TOPIC_0_TEMP		"/temp/0/current"
 #define	MQTT_TOPIC_1_TEMP		"/temp/1/current"
 #define	MQTT_TOPIC_0_SKIP		"/temp/0/skip"

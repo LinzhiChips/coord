@@ -1,0 +1,105 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "ether: single bounce" <<EOF
+/sys/ether/up:0
+/sys/ether/up:1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "ether: ten bounces (before threshold)" <<EOF
+`for n in 1 2 3 4 5 6 7 8 9 10; do
+	echo /sys/ether/up:0
+	echo /sys/ether/up:1
+done`
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "ether: eleven bounces (at threshold)" <<EOF
+`for n in 1 2 3 4 5 6 7 8 9 10 11; do
+	echo /sys/ether/up:0
+	echo /sys/ether/up:1
+done`
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+/sys/ether/bounce:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "ether: twelve bounces (after threshold)" <<EOF
+`for n in 1 2 3 4 5 6 7 8 9 10 11 12; do
+	echo /sys/ether/up:0
+	echo /sys/ether/up:1
+done`
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+/sys/ether/bounce:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "ether: eleven bounces, cool down for 100 s " <<EOF
+`for n in 1 2 3 4 5 6 7 8 9 10 11; do
+	echo /sys/ether/up:0
+	echo /sys/ether/up:1
+done`
+@100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+/sys/ether/bounce:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "ether: eleven bounces, cool down for 150 s " <<EOF
+`for n in 1 2 3 4 5 6 7 8 9 10 11; do
+	echo /sys/ether/up:0
+	echo /sys/ether/up:1
+done`
+@150
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/ether/bounce:0
+/sys/ether/bounce:1
+/sys/ether/bounce:0
+EOF
+
+###############################################################################

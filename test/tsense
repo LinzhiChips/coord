@@ -13,6 +13,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 EOF
 
 # -----------------------------------------------------------------------------
@@ -27,6 +28,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 EOF
 
 # -----------------------------------------------------------------------------
@@ -41,6 +43,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 EOF
 
 # -----------------------------------------------------------------------------
@@ -55,6 +58,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 62,61,40
 EOF
@@ -71,6 +75,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 18,17,40 62,61,40
 EOF
@@ -89,6 +94,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:35 18,17,35 62,61,25
 EOF
@@ -107,6 +113,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/1/overdue:35 30,29,35 44,47,25
 EOF
@@ -126,6 +133,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/1/overdue:35 30,29,35 44,47,25
 /temp/1/overdue:35 30,29,35
@@ -144,6 +152,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/1/overdue:35 30,29,35 44,47,35
 /temp/1/overdue:35 30,29,35
@@ -165,6 +174,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 62,61,40
 /temp/1/overdue:40 44,47,40
@@ -185,6 +195,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 62,61,40
 /temp/1/overdue:40 44,47,40
@@ -206,6 +217,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 62,61,40
 /temp/1/overdue:40 44,47,40
@@ -228,6 +240,7 @@ expect <<EOF
 /power/on/ops:0x0 0x0 1
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
+/sys/ether/bounce:0
 /sys/led/rgb:RG 100 100
 /temp/0/overdue:40 62,61,40
 /temp/1/overdue:40 44,47,40
