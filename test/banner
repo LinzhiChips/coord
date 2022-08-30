@@ -1,0 +1,129 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "banner: no banner" <<EOF
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: user main banner" <<EOF
+/config/user/BANNER:main banner
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:main banner
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: factory main banner" <<EOF
+/config/factory/BANNER:banner, factory
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:banner, factory
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: user overrides factory main banner" <<EOF
+/config/factory/BANNER:factory
+/config/user/BANNER:user
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:factory
+/sys/banner:user
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: user slot 0 banner" <<EOF
+/config/user0/BANNER:S0
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:S0
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: user slot 0 and 1 banner" <<EOF
+/config/user0/BANNER:S0
+/config/user1/BANNER:S1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:S0
+/sys/banner:S0
+S1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: user main, slot 0, and 1 banner" <<EOF
+/config/user/BANNER:main
+/config/user0/BANNER:S0
+/config/user1/BANNER:S1
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:main
+/sys/banner:main
+S0
+/sys/banner:main
+S0
+S1
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "banner: factory main, slot 0, and 1 banner, then slot 0 user" <<EOF
+/config/factory/BANNER:main factory
+/config/factory0/BANNER:S0 factory
+/config/factory1/BANNER:S1 factory
+/config/user0/BANNER:S0 user
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/sys/banner:main factory
+/sys/banner:main factory
+S0 factory
+/sys/banner:main factory
+S0 factory
+S1 factory
+/sys/banner:main factory
+S0 user
+S1 factory
+EOF
+
+###############################################################################

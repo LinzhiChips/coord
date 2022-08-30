@@ -63,6 +63,14 @@
 #define	MQTT_TOPIC_CFG_SLOT1		"/config/user/SWITCH_1_LAST/set"
 #define	MQTT_TOPIC_CFG_TRIP_MASTER	"/config/user/TRIP_MASTER"
 
+#define	MQTT_TOPIC_CFG_BANNER_USER	"/config/user/BANNER"
+#define	MQTT_TOPIC_CFG_BANNER_U0	"/config/user0/BANNER"
+#define	MQTT_TOPIC_CFG_BANNER_U1	"/config/user1/BANNER"
+#define	MQTT_TOPIC_CFG_BANNER_FACTORY	"/config/factory/BANNER"
+#define	MQTT_TOPIC_CFG_BANNER_F0	"/config/factory0/BANNER"
+#define	MQTT_TOPIC_CFG_BANNER_F1	"/config/factory1/BANNER"
+#define	MQTT_TOPIC_BANNER		"/sys/banner"
+
 void mqtt_setup(void);
 void mqtt_loop(void);
 

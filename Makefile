@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 Linzhi Ltd.
+# Copyright (C) 2021, 2022 Linzhi Ltd.
 #
 # This work is licensed under the terms of the MIT License.
 # A copy of the license can be found in the file COPYING.txt
@@ -13,7 +13,8 @@ CFLAGS = -g -Wall -Wextra -Wshadow -Wno-unused-parameter \
 override CFLAGS += $(CFLAGS_OVERRIDE)
 LDLIBS = -L../$(LIB_ARCH_PREFIX)libcommon -lcommon -lpthread -lmosquitto -lm
 
-OBJS = $(NAME).o fsm.o led.o mqtt.o fan.o action.o tsense.o onoff.o ether.o
+OBJS = $(NAME).o fsm.o led.o mqtt.o fan.o action.o tsense.o onoff.o ether.o \
+       banner.o
 
 include Makefile.c-common
 

@@ -20,6 +20,7 @@
 #include "fan.h"
 #include "onoff.h"
 #include "ether.h"
+#include "banner.h"
 #include "mqtt.h"
 
 
@@ -185,6 +186,25 @@ static void process_switch_ops_set(const char *s)
 }
 
 
+static void process_banner(void *user, const char *topic, const char *msg)
+{
+	if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_USER))
+		banner(0, -1, msg);
+	else if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_U0))
+		banner(0, 0, msg);
+	else if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_U1))
+		banner(0, 1, msg);
+	else if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_FACTORY))
+		banner(1, -1, msg);
+	else if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_F0))
+		banner(1, 0, msg);
+	else if (!strcmp(topic, MQTT_TOPIC_CFG_BANNER_F1))
+		banner(1, 1, msg);
+	else
+		fprintf(stderr, "don't recognize topic \"%s\"\n", topic);
+}
+
+
 /* ----- Callback wrappers ------------------------------------------------- */
 
 
@@ -257,6 +277,13 @@ static void sub_string(const char *topic, void (*fn)(const char *))
 }
 
 
+static void sub_generic(const char *topic,
+    void (*fn)(void *user, const char *topic, const char *msg), void *user)
+{
+	mqtt_subscribe("%s", qos_ack, fn, user, topic);
+}
+
+
 /* ----- Loop and setup ---------------------------------------------------- */
 
 
@@ -294,6 +321,13 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_ONOFF_MASTER, process_onoff_master);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT0, process_onoff_slot0);
 	sub_string(MQTT_TOPIC_ONOFF_SLOT1, process_onoff_slot1);
+
+	sub_generic(MQTT_TOPIC_CFG_BANNER_USER, process_banner, NULL);
+	sub_generic(MQTT_TOPIC_CFG_BANNER_U0, process_banner, NULL);
+	sub_generic(MQTT_TOPIC_CFG_BANNER_U1, process_banner, NULL);
+	sub_generic(MQTT_TOPIC_CFG_BANNER_FACTORY, process_banner, NULL);
+	sub_generic(MQTT_TOPIC_CFG_BANNER_F0, process_banner, NULL);
+	sub_generic(MQTT_TOPIC_CFG_BANNER_F1, process_banner, NULL);
 
 	sub_string(MQTT_TOPIC_ONOFF_OPS_SET, process_onoff_ops_set);
 	sub_string(MQTT_TOPIC_CFG_SWITCH_OPS, process_switch_ops_set);
