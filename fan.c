@@ -1,7 +1,7 @@
 /*
  * fan.c - Fan control
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -42,6 +42,9 @@ static bool have_temp = 0;
 static struct dtime last_temp;
 static struct point *points = NULL;
 static unsigned n_points;
+
+
+/* ----- PWM control ------------------------------------------------------- */
 
 
 static void set_duty(unsigned duty)
@@ -97,6 +100,9 @@ static void update_pwm(void)
 }
 
 
+/* ----- Temperature update ------------------------------------------------ */
+
+
 void fan_temp(bool slot, const char *s)
 {
 	struct timespec t;
@@ -148,6 +154,9 @@ void fan_temp(bool slot, const char *s)
 }
 
 
+/* ----- Skip disabled channels -------------------------------------------- */
+
+
 void fan_skip(bool slot, const char *msg)
 {
 	char *tmp, *s;
@@ -169,6 +178,9 @@ void fan_skip(bool slot, const char *msg)
 	}
 	free(tmp);
 }
+
+
+/* ----- Profile parsing --------------------------------------------------- */
 
 
 void fan_profile(const char *s)
@@ -205,6 +217,9 @@ void fan_profile(const char *s)
 }
 
 
+/* ----- Run fans at 100% if temperature readings stop --------------------- */
+
+
 void fan_idle(void)
 {
 	if (!have_profile)
@@ -214,6 +229,9 @@ void fan_idle(void)
 		have_profile = 0;
 	}
 }
+
+
+/* ----- Initialization ---------------------------------------------------- */
 
 
 void fan_init(void)
