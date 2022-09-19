@@ -180,10 +180,39 @@ void fan_skip(bool slot, const char *msg)
 }
 
 
+/* ----- Publish profile --------------------------------------------------- */
+
+
+static void publish_profile(void)
+{
+	char *s = NULL;
+	char tmp[20]; /* generous */
+	unsigned i;
+
+	if (!have_profile || !n_points) {
+		mqtt_printf(MQTT_TOPIC_FAN_PROFILE, qos_ack, 1, "0:100");
+		return;
+	}
+	for (i = 0; i != n_points; i++) {
+		if (i)
+			s = stralloc_append(s, " ");
+		sprintf(tmp, "%ld:%u", points[i].temp, points[i].duty);
+		s = stralloc_append(s, tmp);
+	}
+	mqtt_printf(MQTT_TOPIC_FAN_PROFILE, qos_ack, 1, "%s", s);
+	free(s);
+}
+
+
 /* ----- Profile parsing --------------------------------------------------- */
 
 
-void fan_profile(const char *s)
+static char *profile_factory = NULL;	/* factory-configured profile */
+static char *profile_user = NULL;	/* user-configured profile */
+static char *profile_live = NULL;	/* live-set profile */
+
+
+static void new_profile(const char *s, char separator)
 {
 	struct point *last = NULL;
 	const char *next;
@@ -198,7 +227,7 @@ void fan_profile(const char *s)
 	do {
 		unsigned temp, duty;
 
-		next = strchr(s, ' ');
+		next = strchr(s, separator);
 		if (sscanf(s, "%u:%u", &temp, &duty) == 2 &&
 		    (!last || last->temp < temp) &&
 		    (!last || last->duty <= duty)) {
@@ -212,8 +241,56 @@ void fan_profile(const char *s)
 		}
 		s = next + 1;
 	} while (next);
-	
+
 	update_pwm();
+}
+
+
+static void no_profile(void)
+{
+	have_profile = 0;
+	free(points);
+	points = NULL;
+	n_points = 0;
+	set_duty(100);
+}
+
+
+static void update_profile(void)
+{
+	if (profile_live)
+		new_profile(profile_live, ' ');
+	else if (profile_user)
+		new_profile(profile_user, ',');
+	else if (profile_factory)
+		new_profile(profile_factory, ',');
+	else
+		no_profile();
+	publish_profile();
+}
+
+
+void fan_profile_set(const char *s)
+{
+	free(profile_live);
+	profile_live = strcmp(s, "-") ? stralloc(s) : NULL;
+	update_profile();
+}
+
+
+void fan_profile_factory(const char *s)
+{
+	free(profile_factory);
+	profile_factory = strcmp(s, "-") ? stralloc(s) : NULL;
+	update_profile();
+}
+
+
+void fan_profile_user(const char *s)
+{
+	free(profile_user);
+	profile_user = strcmp(s, "-") ? stralloc(s) : NULL;
+	update_profile();
 }
 
 

@@ -38,8 +38,12 @@
 #define	MQTT_TOPIC_1_TEMP		"/temp/1/current"
 #define	MQTT_TOPIC_0_SKIP		"/temp/0/skip"
 #define	MQTT_TOPIC_1_SKIP		"/temp/1/skip"
-#define	MQTT_TOPIC_FAN_PROFILE		"/fan/profile"
 #define	MQTT_TOPIC_ALL_PWM_SET		"/fan/all/pwm-set"
+
+#define	MQTT_TOPIC_FAN_PROFILE		"/fan/profile"
+#define	MQTT_TOPIC_FAN_PROFILE_SET	"/fan/profile-set"
+#define	MQTT_TOPIC_CFG_PROFILE_FACTORY	"/config/factory/FAN_PROFILE"
+#define	MQTT_TOPIC_CFG_PROFILE_USER	"/config/user/FAN_PROFILE"
 
 #define	MQTT_TOPIC_TEMP_OVERDUE		"/temp/%s/overdue"
 
@@ -69,6 +73,7 @@
 #define	MQTT_TOPIC_CFG_BANNER_F0	"/config/factory0/BANNER"
 #define	MQTT_TOPIC_CFG_BANNER_F1	"/config/factory1/BANNER"
 #define	MQTT_TOPIC_BANNER		"/sys/banner"
+
 
 void mqtt_setup(void);
 void mqtt_loop(void);

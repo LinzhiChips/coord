@@ -313,7 +313,10 @@ void mqtt_setup(void)
 	sub_string(MQTT_TOPIC_1_TEMP, process_temp_1);
 	sub_string(MQTT_TOPIC_0_SKIP, process_skip_0);
 	sub_string(MQTT_TOPIC_1_SKIP, process_skip_1);
-	sub_string(MQTT_TOPIC_FAN_PROFILE, fan_profile);
+
+	sub_string(MQTT_TOPIC_FAN_PROFILE_SET, fan_profile_set);
+	sub_string(MQTT_TOPIC_CFG_PROFILE_FACTORY, fan_profile_factory);
+	sub_string(MQTT_TOPIC_CFG_PROFILE_USER, fan_profile_user);
 
 	sub_string(MQTT_TOPIC_MINED_TIME, process_mined);
 	sub_string(MQTT_TOPIC_MINED0_TIME, process_mined0);

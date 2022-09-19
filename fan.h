@@ -1,7 +1,7 @@
 /*
  * fan.h - Fan control
  *
- * Copyright (C) 2021 Linzhi Ltd.
+ * Copyright (C) 2021, 2022 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -12,7 +12,11 @@
 
 void fan_temp(bool slot, const char *s);
 void fan_skip(bool slot, const char *s);
-void fan_profile(const char *s);
+
+void fan_profile_set(const char *s);
+void fan_profile_factory(const char *s);
+void fan_profile_user(const char *s);
+
 void fan_idle(void);
 
 void fan_init(void);

@@ -1,0 +1,148 @@
+#!/bin/sh
+. ./Common
+
+###############################################################################
+
+try "fan: factory 0:80,... overrides default 0:100" <<EOF
+/temp/0/current:0
+/config/factory/FAN_PROFILE:0:80,100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: user 0:90,... overrides default 0:100" <<EOF
+/temp/0/current:0
+/config/user/FAN_PROFILE:0:90,100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: user 0:90,... overrides factory 0:80,..." <<EOF
+/temp/0/current:0
+/config/factory/FAN_PROFILE:0:80,100:100
+/config/user/FAN_PROFILE:0:90,100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: live 0:95,... overrides user 0:85,..." <<EOF
+/temp/0/current:0
+/config/user/FAN_PROFILE:0:85,100:100
+/fan/profile-set:0:95 100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:85
+/fan/profile:0:85 100:100
+/fan/all/pwm-set:95
+/fan/profile:0:95 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: factory 0:90,... does not override user 0:90,..." <<EOF
+/temp/0/current:0
+/config/user/FAN_PROFILE:0:90,100:100
+/config/factory/FAN_PROFILE:0:80,100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: user 0:90,... does not override live 0:80,..." <<EOF
+/temp/0/current:0
+/fan/profile-set:0:80 100:100
+/config/user/FAN_PROFILE:0:90,100:100
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: factory, user, reset user" <<EOF
+/temp/0/current:0
+/config/factory/FAN_PROFILE:0:90,100:100
+/config/user/FAN_PROFILE:0:80,100:100
+/config/user/FAN_PROFILE:-
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+/fan/all/pwm-set:90
+/fan/profile:0:90 100:100
+EOF
+
+# -----------------------------------------------------------------------------
+
+try "fan: live, factory, reset live" <<EOF
+/temp/0/current:0
+/fan/profile-set:0:80 100:100
+/config/factory/FAN_PROFILE:0:70,100:100
+/fan/profile-set:-
+EOF
+
+expect <<EOF
+/power/on/ops:0x0 0x0 1
+/sys/led/rgb:RG 0 0
+/sys/led/ether:1
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+/fan/all/pwm-set:80
+/fan/profile:0:80 100:100
+/fan/all/pwm-set:70
+/fan/profile:0:70 100:100
+EOF
+
+###############################################################################

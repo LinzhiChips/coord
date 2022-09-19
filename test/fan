@@ -4,7 +4,7 @@
 ###############################################################################
 
 try "fan: 0:100" <<EOF
-/fan/profile:0:100
+/fan/profile-set:0:100
 EOF
 
 expect <<EOF
@@ -12,12 +12,13 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
+/fan/profile:0:100
 EOF
 
 # -----------------------------------------------------------------------------
 
 try "fan: 20:50 70:100" <<EOF
-/fan/profile:20:50 70:100
+/fan/profile-set:20:50 70:100
 /temp/0/current:0
 /temp/0/current:30
 /temp/0/current:60
@@ -29,6 +30,7 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
+/fan/profile:20:50 70:100
 /fan/all/pwm-set:50
 /fan/all/pwm-set:60
 /fan/all/pwm-set:90
@@ -38,7 +40,7 @@ EOF
 # -----------------------------------------------------------------------------
 
 try "fan: 49:0 50:20 80:100" <<EOF
-/fan/profile:49:0 50:20 80:100
+/fan/profile-set:49:0 50:20 80:100
 /temp/0/current:40
 /temp/0/current:50
 /temp/0/current:65
@@ -50,6 +52,7 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:100
+/fan/profile:49:0 50:20 80:100
 /fan/all/pwm-set:0
 /fan/all/pwm-set:20
 /fan/all/pwm-set:60
@@ -60,7 +63,7 @@ EOF
 
 try "fan: 20:20 80:100, temperature set to 35 C" <<EOF
 /temp/0/current:35
-/fan/profile:20:20 80:100
+/fan/profile-set:20:20 80:100
 EOF
 
 expect <<EOF
@@ -68,13 +71,14 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:40
+/fan/profile:20:20 80:100
 EOF
 
 # -----------------------------------------------------------------------------
 
 try "fan: 49:0 50:30 90:100, temperature set to 70.5 C" <<EOF
 /temp/0/current:70.5
-/fan/profile:49:0 50:30 90:100
+/fan/profile-set:49:0 50:30 90:100
 EOF
 
 expect <<EOF
@@ -82,13 +86,14 @@ expect <<EOF
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:65
+/fan/profile:49:0 50:30 90:100
 EOF
 
 # -----------------------------------------------------------------------------
 
 try "fan: 50:0 50:30 90:100, temperature set to 70.5 C (entry ignored)" <<EOF
 /temp/0/current:70.5
-/fan/profile:50:0 50:30 90:100
+/fan/profile-set:50:0 50:30 90:100
 EOF
 
 expect <<EOF
@@ -97,6 +102,7 @@ bad temp:duty entry at "50:30 90:100"
 /sys/led/rgb:RG 0 0
 /sys/led/ether:1
 /fan/all/pwm-set:50
+/fan/profile:50:0 90:100
 EOF
 
 ###############################################################################
