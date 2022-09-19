@@ -24,7 +24,6 @@
 #define	MQTT_TOPIC_USER			"/sys/button/user"
 #define	MQTT_TOPIC_MINED_STATE		"/mine/mined-state"
 #define	MQTT_TOPIC_RECOVERY		"/sys/recovery-mode"
-#define	MQTT_TOPIC_RESET		"/mine/reset"
 #define	MQTT_TOPIC_BOOT_PROBLEM		"/sys/boot/problem"
 
 #define	MQTT_TOPIC_DARK_MODE		"/sys/led/dark-mode"
