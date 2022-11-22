@@ -19,6 +19,7 @@ BLUE	Y	Miner has been highlighted	Press USER / Toggle highlight
 						again)
 RED	Y	Thermal and/or power shutdown	Press USER / Clear on UI
 YELLOW	Y	Thermal warning			Press USER / Lower temperature
+	Y	Other warning
 	N	Not connected to pool		- Make sure pool is configured
 						  & enabled
 						- Check network

@@ -315,3 +315,9 @@ void fan_init(void)
 {
 	mqtt_last_will(MQTT_TOPIC_ALL_PWM_SET, qos_ack, 1, "100");
 }
+
+
+void fan_late_init(void)
+{
+	publish_profile();
+}

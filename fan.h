@@ -20,5 +20,6 @@ void fan_profile_user(const char *s);
 void fan_idle(void);
 
 void fan_init(void);
+void fan_late_init(void);
 
 #endif /* !COORD_FAN_H */
