@@ -1,7 +1,7 @@
 /*
  * fsm.c - Layered state machines to determine system condition
  *
- * Copyright (C) 2021, 2022 Linzhi Ltd.
+ * Copyright (C) 2021-2023 Linzhi Ltd.
  *
  * This work is licensed under the terms of the MIT License.
  * A copy of the license can be found in the file COPYING.txt
@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/wait.h>
 
 #include "linzhi/mqtt.h"
 #include "linzhi/dtime.h"
@@ -43,10 +45,26 @@ static void update_led(void)
 
 static void run(const char *cmd)
 {
-	if (testing)
+	if (testing) {
 		printf("RUN %s\n", cmd);
-	else
-		system(cmd);
+	} else {
+		int retval;
+
+		retval = system(cmd);
+		if (retval == -1) {
+			perror(cmd);
+		} else if (WIFEXITED(retval)) {
+			if (WEXITSTATUS(retval))
+				fprintf(stderr, "%s: exit status %d\n",
+				    cmd, WEXITSTATUS(retval));
+		} else if (WIFSIGNALED(retval)) {
+			fprintf(stderr, "%s: signal %s (%d)\n",
+			    cmd, strsignal(WTERMSIG(retval)), WTERMSIG(retval));
+		} else {
+			fprintf(stderr, "%s: exit status (undecoded) %d\n",
+			    cmd, retval);
+		}
+	}
 }
 
 
